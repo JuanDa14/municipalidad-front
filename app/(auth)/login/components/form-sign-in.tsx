@@ -15,27 +15,26 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/hooks/useAuth';
-import { User } from '@/interfaces/user';
 import { toast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
 	email: z.string().email({
 		message: 'Por favor, ingrese un correo electrónico válido.',
 	}),
-	password: z.string().min(3, {
-		message: 'La contraseña debe tener al menos 8 caracteres.',
+	password: z.string().min(6, {
+		message: 'La contraseña debe tener al menos 6 caracteres.',
 	}),
 });
 
 export const SignInForm = () => {
-	const { dispatch } = useAuth();
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			email: 'user@test.com',
-			password: 'user',
+			email: 'admin@test.com',
+			password: 'password',
 		},
 	});
 
@@ -44,19 +43,17 @@ export const SignInForm = () => {
 			const user = await signIn('credentials', {
 				email: values.email,
 				password: values.password,
-				redirect: true,
-				callbackUrl: '/dashboard',
 			});
 
 			if (user?.error) {
-				toast({
+				return toast({
+					variant: 'destructive',
 					title: 'Error',
-					description: user.error,
-					type: 'background',
+					description: 'Credenciales inválidas.',
 				});
 			}
 
-			// dispatch({ type: 'LOGIN', payload: user });
+			router.prefetch('/dashboard');
 		} catch (error) {
 			console.log(error);
 		}
@@ -65,7 +62,7 @@ export const SignInForm = () => {
 	return (
 		<Card className='max-w-sm w-full mx-auto'>
 			<CardHeader>
-				<CardTitle>Iniciar sesion</CardTitle>
+				<CardTitle>Iniciar sesión</CardTitle>
 			</CardHeader>
 			<CardContent>
 				<Form {...form}>

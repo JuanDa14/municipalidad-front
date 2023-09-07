@@ -1,8 +1,8 @@
 export interface User {
-	id: string;
+	_id: string;
 	name: string;
 	password: string;
-	role: 'ADMIN' | 'SUPER-USER' | 'USER';
+	role: { _id: string; name: string };
 	email: string;
 	imageURL: string;
 	state: string;

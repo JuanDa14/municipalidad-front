@@ -5,6 +5,8 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth/auth-provider';
 import { NextAuthProvider } from './provider';
+import { Suspense } from 'react';
+import Loading from './loading';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,14 +20,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 		<>
 			<html lang='en' suppressHydrationWarning>
 				<body className={inter.className}>
-					<NextAuthProvider>
-						<AuthProvider>
-							<ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-								{children}
-								<Toaster />
-							</ThemeProvider>
-						</AuthProvider>
-					</NextAuthProvider>
+					<Suspense fallback={<Loading />}>
+						<NextAuthProvider>
+							<AuthProvider>
+								<ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+									{children}
+									<Toaster />
+								</ThemeProvider>
+							</AuthProvider>
+						</NextAuthProvider>
+					</Suspense>
 				</body>
 			</html>
 		</>

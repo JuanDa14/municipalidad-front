@@ -16,7 +16,7 @@ import { signOut, useSession } from 'next-auth/react';
 export const SettingsUserButton = () => {
 	const router = useRouter();
 
-	const { data } = useSession();
+	const { data: session } = useSession();
 
 	const handleSignOut = () => {
 		signOut({ callbackUrl: '/login' });
@@ -26,8 +26,8 @@ export const SettingsUserButton = () => {
 		<DropdownMenu>
 			<DropdownMenuTrigger className='outline-none'>
 				<Avatar>
-					<AvatarImage src={''} />
-					<AvatarFallback>{data?.user?.name}</AvatarFallback>
+					<AvatarImage src={session?.user.imageURL} />
+					<AvatarFallback>{session?.user?.name}</AvatarFallback>
 				</Avatar>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
@@ -35,12 +35,12 @@ export const SettingsUserButton = () => {
 					<DropdownMenuItem>
 						<div className='flex items-center space-x-2'>
 							<Avatar>
-								<AvatarImage src={''} />
-								<AvatarFallback>{data?.user?.name}</AvatarFallback>
+								<AvatarImage src={session?.user.imageURL} />
+								<AvatarFallback>{session?.user?.name}</AvatarFallback>
 							</Avatar>
 							<div>
-								<DropdownMenuLabel>{data?.user?.name}</DropdownMenuLabel>
-								<p className='text-sm text-gray-500'>{data?.user?.email}</p>
+								<DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
+								<p className='text-sm text-gray-500'>{session?.user?.email}</p>
 							</div>
 						</div>
 					</DropdownMenuItem>

@@ -26,14 +26,18 @@ import {
 import { ImageUpload } from '@/components/image-upload';
 import { toast } from '@/components/ui/use-toast';
 import { User } from '@/interfaces/user';
+import { Role } from '@/interfaces/role';
+import { useSession } from 'next-auth/react';
 
-const roles = [
-	{ value: 'USER', label: 'Usuario' },
-	{ value: 'SUPER-USER', label: 'Super Usuario' },
-	{ value: 'ADMIN', label: 'Administrador' },
-];
+enum RolesName {
+	ADMIN = 'Administrador',
+	SUPER_USER = 'Super Usuario',
+	USER = 'Usuario',
+}
 
-const formSchema = z.object({
+type RolesNameType = keyof typeof RolesName;
+
+const createUserSchema = z.object({
 	name: z.string().min(3, {
 		message: 'El nombre debe tener al menos 3 caracteres.',
 	}),
@@ -44,39 +48,72 @@ const formSchema = z.object({
 		message: 'La contraseña debe tener al menos 8 caracteres.',
 	}),
 	imageURL: z.string().min(1, { message: 'La imagen es requerida.' }),
-	role: z.enum(['ADMIN', 'SUPER-USER', 'USER']),
+	role: z.string().min(1, { message: 'El rol es requerido.' }),
 });
 
-export const FormUser = ({ initialData }: { initialData?: User }) => {
-	const router = useRouter();
+const updateUserSchema = createUserSchema.omit({ password: true }).extend({
+	password: z.string().optional(),
+});
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
-		defaultValues: initialData || {
+export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Role[] }) => {
+	const router = useRouter();
+	const { data: session } = useSession();
+
+	const rolesIds = roles.map((rol) => rol._id);
+
+	const form = useForm<z.infer<typeof createUserSchema>>({
+		resolver: zodResolver(initialData ? updateUserSchema : createUserSchema),
+		defaultValues: { ...initialData, password: '', role: initialData?.role._id } || {
 			name: '',
 			email: '',
 			password: '',
-			role: 'USER',
+			role: rolesIds[0],
 			imageURL: '',
 		},
 	});
 
 	const isLoading = form.formState.isSubmitting;
 
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+	const onSubmit = async (values: z.infer<typeof createUserSchema>) => {
 		try {
 			if (initialData) {
 				//Update
+				const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${initialData._id}`, {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${session!.accessToken}`,
+					},
+					body: JSON.stringify(values),
+				});
+
+				const data = await resp.json();
+
+				if (!resp.ok) {
+					throw new Error(data.message);
+				}
 			} else {
 				//Create
+				const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${session!.accessToken}`,
+					},
+					body: JSON.stringify(values),
+				});
+
+				const data = await resp.json();
+
+				if (!resp.ok) {
+					throw new Error(data.message);
+				}
 			}
 			toast({
 				description: 'Operación exitosa.',
 				duration: 3000,
 			});
-
-			router.refresh();
-			router.push('/users');
+			router.push('/user');
 		} catch (error) {
 			toast({
 				variant: 'destructive',
@@ -179,9 +216,13 @@ export const FormUser = ({ initialData }: { initialData?: User }) => {
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
-											{roles.map((rol) => (
-												<SelectItem value={rol.value} key={rol.value}>
-													{rol.label}
+											{rolesIds.map((rolId) => (
+												<SelectItem value={rolId} key={rolId}>
+													{roles.map(
+														({ name, _id }) =>
+															_id === rolId &&
+															RolesName[name.toUpperCase() as RolesNameType]
+													)}
 												</SelectItem>
 											))}
 										</SelectContent>
@@ -193,7 +234,7 @@ export const FormUser = ({ initialData }: { initialData?: User }) => {
 					</div>
 
 					<Button disabled={isLoading} type='submit'>
-						Registrar usuario
+						Guardar usuario
 					</Button>
 				</form>
 			</Form>
