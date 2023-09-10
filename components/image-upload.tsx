@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { CldUploadButton } from 'next-cloudinary';
 import Image from 'next/image';
+import { useUserProfileModal } from '@/hooks/useModal';
+import { cn } from '@/lib/utils';
 
 interface Props {
 	value: string;
@@ -13,6 +15,8 @@ interface Props {
 export const ImageUpload = ({ value, onChange, disabled }: Props) => {
 	const [isMounted, setIsMounted] = useState(false);
 
+	const { isOpen, closeModal, openModal } = useUserProfileModal();
+
 	useEffect(() => {
 		setIsMounted(true);
 	}, []);
@@ -22,8 +26,14 @@ export const ImageUpload = ({ value, onChange, disabled }: Props) => {
 	}
 
 	return (
-		<div className='space-y-4 w-full flex flex-col justify-center items-center'>
+		<div
+			className={cn(
+				'space-y-4 w-full flex flex-col justify-center items-center',
+				disabled ? 'pointer-events-none opacity-50' : 'pointer-events-auto'
+			)}
+		>
 			<CldUploadButton
+				className='z-[60]'
 				options={{
 					maxFiles: 1,
 				}}

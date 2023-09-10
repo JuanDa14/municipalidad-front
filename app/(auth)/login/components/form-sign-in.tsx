@@ -14,9 +14,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from '@/components/ui/use-toast';
-import { useRouter } from 'next/navigation';
 import { Icons } from '@/components/icons';
 
 const formSchema = z.object({
@@ -29,8 +26,6 @@ const formSchema = z.object({
 });
 
 export const SignInForm = () => {
-	const router = useRouter();
-
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -42,78 +37,53 @@ export const SignInForm = () => {
 	const isLoading = form.formState.isSubmitting;
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		try {
-			const user = await signIn('credentials', {
-				email: values.email,
-				password: values.password,
-			});
-
-			if (user?.error) {
-				return toast({
-					variant: 'destructive',
-					title: 'Error',
-					description: 'Credenciales inválidas.',
-				});
-			}
-
-			router.prefetch('/dashboard');
-		} catch (error) {
-			console.log(error);
-		}
+		await signIn('credentials', {
+			email: values.email,
+			password: values.password,
+			redirect: true,
+			callbackUrl: '/dashboard',
+		});
 	};
 
 	return (
-		<div className='container'>
-			<Card className='max-w-sm w-full mx-auto'>
-				<CardHeader>
-					<CardTitle>Iniciar sesión</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<Form {...form}>
-						<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-							<FormField
-								control={form.control}
-								name='email'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Correo electrónico</FormLabel>
-										<FormControl>
-											<Input
-												disabled={isLoading}
-												placeholder='test@gmail.com'
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name='password'
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Contraseña</FormLabel>
-										<FormControl>
-											<Input
-												disabled={isLoading}
-												type='password'
-												placeholder='********'
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<Button disabled={isLoading} type='submit' className='w-full'>
-								{isLoading && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
-								Ingresar
-							</Button>
-						</form>
-					</Form>
-				</CardContent>
-			</Card>
-		</div>
+		<Form {...form}>
+			<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+				<FormField
+					control={form.control}
+					name='email'
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Correo electrónico</FormLabel>
+							<FormControl>
+								<Input disabled={isLoading} placeholder='test@gmail.com' {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name='password'
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Contraseña</FormLabel>
+							<FormControl>
+								<Input
+									disabled={isLoading}
+									type='password'
+									placeholder='********'
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<Button disabled={isLoading} type='submit' className='w-full'>
+					{isLoading && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
+					Ingresar
+				</Button>
+			</form>
+		</Form>
 	);
 };

@@ -1,44 +1,15 @@
 'use client';
 
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import { AuthContext, initialState } from '@/context/auth/auth-context';
 import { authReducer } from '@/context/auth/auth-reducer';
 import { signOut, useSession } from 'next-auth/react';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+import { useFetch } from '@/hooks/useFetch';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [state, dispatch] = useReducer(authReducer, initialState);
 	const { data: session, status, update } = useSession();
-	const [isMounted, setIsMounted] = useState(true);
-
-	const fecthWithRefreshToken = async () => {
-		try {
-			const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session?.refreshToken}`,
-				},
-			});
-			const data = (await res.json()) as {
-				ok: boolean;
-				[key: string]: any;
-			};
-			if (isMounted) {
-				if (data.ok) {
-					return data;
-				}
-			}
-		} catch (error) {
-			console.log(error);
-		}
-	};
-
-	useEffect(() => {
-		return () => {
-			setIsMounted(false);
-		};
-	}, []);
+	const { fecthWithRefreshToken } = useFetch();
 
 	useEffect(() => {
 		if (status === 'authenticated') {

@@ -7,17 +7,24 @@ import {
 	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
+	DropdownMenuPortal,
 	DropdownMenuSeparator,
 	DropdownMenuShortcut,
+	DropdownMenuSub,
+	DropdownMenuSubContent,
+	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { signOut, useSession } from 'next-auth/react';
 import { Button } from './ui/button';
 import { useUserProfileModal } from '@/hooks/useModal';
+import { useTheme } from 'next-themes';
 
 export const SettingsUserButton = () => {
 	const router = useRouter();
+	const { setTheme } = useTheme();
+
 	const { data: session } = useSession();
 
 	const { openModal } = useUserProfileModal();
@@ -55,6 +62,18 @@ export const SettingsUserButton = () => {
 						Facturación
 						<DropdownMenuShortcut>⌘F</DropdownMenuShortcut>
 					</DropdownMenuItem>
+					<DropdownMenuSub>
+						<DropdownMenuSubTrigger>Tema</DropdownMenuSubTrigger>
+						<DropdownMenuPortal>
+							<DropdownMenuSubContent>
+								<DropdownMenuItem onClick={() => setTheme('light')}>Claro</DropdownMenuItem>
+								<DropdownMenuItem onClick={() => setTheme('dark')}>Oscuro</DropdownMenuItem>
+								<DropdownMenuItem onClick={() => setTheme('system')}>
+									Sistema
+								</DropdownMenuItem>
+							</DropdownMenuSubContent>
+						</DropdownMenuPortal>
+					</DropdownMenuSub>
 					<DropdownMenuItem>
 						Configuración
 						<DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
