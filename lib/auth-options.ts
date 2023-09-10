@@ -4,6 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 declare module 'next-auth' {
 	interface Session {
 		accessToken: string;
+		refreshToken: string;
 		user: {
 			_id: string;
 			name: string;
@@ -18,6 +19,7 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
 	interface JWT {
 		accessToken: string;
+		refreshToken: string;
 		user: {
 			_id: string;
 			name: string;
@@ -30,7 +32,7 @@ declare module 'next-auth/jwt' {
 }
 
 export const options: NextAuthOptions = {
-	session: { strategy: 'jwt', maxAge: 60 * 60 * 24 },
+	session: { strategy: 'jwt', maxAge: 60 * 60 },
 	providers: [
 		CredentialsProvider({
 			id: 'credentials',
@@ -67,7 +69,26 @@ export const options: NextAuthOptions = {
 	],
 	secret: process.env.NEXTAUTH_SECRET,
 	callbacks: {
-		jwt: async ({ token, user }) => {
+		jwt: async ({ token, user, trigger, session }) => {
+			if (trigger === 'update' && session) {
+				if (session.accessToken && session.refreshToken) {
+					console.log('Refreshed token');
+					return {
+						...token,
+						accessToken: session.accessToken,
+						refreshToken: session.refreshToken,
+						user: {
+							...session.user,
+						},
+					};
+				}
+				return {
+					...token,
+					user: {
+						...session.user,
+					},
+				};
+			}
 			if (user) {
 				return {
 					...token,
@@ -82,14 +103,16 @@ export const options: NextAuthOptions = {
 				_id: token.user._id as string,
 				name: token.user.name as string,
 				role: {
-					_id: token.user._id as string,
-					name: token.user.name as string,
+					_id: token.user.role._id as string,
+					name: token.user.role.name as string,
 				},
 				email: token.user.email as string,
 				imageURL: token.user.imageURL as string,
 				state: token.user.state as boolean,
 			};
 			session.accessToken = token.accessToken as string;
+			session.refreshToken = token.refreshToken as string;
+
 			return session;
 		},
 	},

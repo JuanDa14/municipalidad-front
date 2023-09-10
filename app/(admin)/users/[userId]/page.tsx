@@ -6,7 +6,6 @@ import { Role } from '@/interfaces/role';
 
 async function getUser(userId: string, accessToken: string): Promise<User> {
 	const resp = await fetch(`${process.env.API_URL}/user/${userId}`, {
-		cache: 'no-cache',
 		headers: {
 			Authorization: `Bearer ${accessToken}`,
 		},

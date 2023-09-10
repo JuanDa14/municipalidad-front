@@ -5,7 +5,6 @@ import { options } from '@/lib/auth-options';
 
 async function getUsers(accessToken: string): Promise<User[]> {
 	const resp = await fetch(`${process.env.API_URL}/user`, {
-		cache: 'no-cache',
 		headers: {
 			Authorization: `Bearer ${accessToken}`,
 		},

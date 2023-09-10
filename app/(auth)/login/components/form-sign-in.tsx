@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
+import { Icons } from '@/components/icons';
 
 const formSchema = z.object({
 	email: z.string().email({
@@ -37,6 +38,8 @@ export const SignInForm = () => {
 			password: 'password',
 		},
 	});
+
+	const isLoading = form.formState.isSubmitting;
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		try {
@@ -60,49 +63,57 @@ export const SignInForm = () => {
 	};
 
 	return (
-		<Card className='max-w-sm w-full mx-auto'>
-			<CardHeader>
-				<CardTitle>Iniciar sesión</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-						<FormField
-							control={form.control}
-							name='email'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Correo electrónico</FormLabel>
-									<FormControl>
-										<Input placeholder='Ingrese su correo electrónico' {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name='password'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Contraseña</FormLabel>
-									<FormControl>
-										<Input
-											type='password'
-											placeholder='Ingrese su contraseña'
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<Button disabled={form.formState.isSubmitting} type='submit'>
-							Ingresar
-						</Button>
-					</form>
-				</Form>
-			</CardContent>
-		</Card>
+		<div className='container'>
+			<Card className='max-w-sm w-full mx-auto'>
+				<CardHeader>
+					<CardTitle>Iniciar sesión</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+							<FormField
+								control={form.control}
+								name='email'
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Correo electrónico</FormLabel>
+										<FormControl>
+											<Input
+												disabled={isLoading}
+												placeholder='test@gmail.com'
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name='password'
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Contraseña</FormLabel>
+										<FormControl>
+											<Input
+												disabled={isLoading}
+												type='password'
+												placeholder='********'
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<Button disabled={isLoading} type='submit' className='w-full'>
+								{isLoading && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
+								Ingresar
+							</Button>
+						</form>
+					</Form>
+				</CardContent>
+			</Card>
+		</div>
 	);
 };

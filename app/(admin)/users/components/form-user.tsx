@@ -24,12 +24,21 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { ImageUpload } from '@/components/image-upload';
-import { toast } from '@/components/ui/use-toast';
 import { User } from '@/interfaces/user';
 import { Role } from '@/interfaces/role';
-import { useSession } from 'next-auth/react';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuGroup,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+import { MoreVertical } from 'lucide-react';
+import { useUserModal } from '@/hooks/useModal';
+import { useFetch } from '@/hooks/useFetch';
+import { Icons } from '@/components/icons';
 
-enum RolesName {
+export enum RolesName {
 	ADMIN = 'Administrador',
 	SUPER_USER = 'Super Usuario',
 	USER = 'Usuario',
@@ -57,9 +66,9 @@ const updateUserSchema = createUserSchema.omit({ password: true }).extend({
 
 export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Role[] }) => {
 	const router = useRouter();
-	const { data: session } = useSession();
-
+	const { openModal } = useUserModal();
 	const rolesIds = roles.map((rol) => rol._id);
+	const { fetchWithAccessToken } = useFetch();
 
 	const form = useForm<z.infer<typeof createUserSchema>>({
 		resolver: zodResolver(initialData ? updateUserSchema : createUserSchema),
@@ -75,51 +84,27 @@ export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Ro
 	const isLoading = form.formState.isSubmitting;
 
 	const onSubmit = async (values: z.infer<typeof createUserSchema>) => {
-		try {
-			if (initialData) {
-				//Update
-				const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/${initialData._id}`, {
-					method: 'PUT',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${session!.accessToken}`,
-					},
-					body: JSON.stringify(values),
-				});
+		if (initialData) {
+			//Update
+			const data = await fetchWithAccessToken(`/user/${initialData._id}`, {
+				method: 'PUT',
+				body: JSON.stringify(values),
+			});
 
-				const data = await resp.json();
-
-				if (!resp.ok) {
-					throw new Error(data.message);
-				}
-			} else {
-				//Create
-				const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${session!.accessToken}`,
-					},
-					body: JSON.stringify(values),
-				});
-
-				const data = await resp.json();
-
-				if (!resp.ok) {
-					throw new Error(data.message);
-				}
+			if (data.ok) {
+				router.push('/users');
+				router.refresh();
 			}
-			toast({
-				description: 'Operación exitosa.',
-				duration: 3000,
+		} else {
+			//Create
+			const data = await fetchWithAccessToken('/user', {
+				method: 'POST',
+				body: JSON.stringify(values),
 			});
-			router.push('/user');
-		} catch (error) {
-			toast({
-				variant: 'destructive',
-				description: 'Ocurrió un error al realizar la operación.',
-				duration: 3000,
-			});
+			if (data.ok) {
+				router.push('/users');
+				router.refresh();
+			}
 		}
 	};
 
@@ -128,11 +113,31 @@ export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Ro
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
 					<div className='space-y-2 w-full'>
-						<div className='text-lg font-medium'>
-							<h3>Formulario de Usuario</h3>
-							<p className='text-sm text-muted-foreground'>
-								Complete todos los datos correctamente.
-							</p>
+						<div className='flex justify-between'>
+							<div className='text-lg font-medium'>
+								<h3>Formulario de Usuario</h3>
+								<p className='text-sm text-muted-foreground'>
+									Complete todos los datos correctamente.
+								</p>
+							</div>
+							{initialData?._id && initialData.state && (
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<Button size={'icon'} variant={'ghost'}>
+											<MoreVertical size={20} />
+										</Button>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent>
+										<DropdownMenuGroup>
+											<DropdownMenuItem className='cursor-pointer outline-none'>
+												<Button onClick={openModal} variant={'ghost'}>
+													Eliminar usuario
+												</Button>
+											</DropdownMenuItem>
+										</DropdownMenuGroup>
+									</DropdownMenuContent>
+								</DropdownMenu>
+							)}
 						</div>
 						<Separator className='bg-primary/10' />
 					</div>
@@ -159,7 +164,11 @@ export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Ro
 								<FormItem>
 									<FormLabel>Nombre Completo</FormLabel>
 									<FormControl>
-										<Input placeholder='Ingrese el nombre completo' {...field} />
+										<Input
+											disabled={isLoading}
+											placeholder='Ingrese el nombre completo'
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -172,7 +181,11 @@ export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Ro
 								<FormItem>
 									<FormLabel>Correo electrónico</FormLabel>
 									<FormControl>
-										<Input placeholder='Ingrese el correo electrónico' {...field} />
+										<Input
+											disabled={isLoading}
+											placeholder='Ingrese el correo electrónico'
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -186,6 +199,7 @@ export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Ro
 									<FormLabel>Contraseña</FormLabel>
 									<FormControl>
 										<Input
+											disabled={isLoading}
 											type='password'
 											placeholder='Ingrese la contraseña'
 											{...field}
@@ -234,6 +248,7 @@ export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Ro
 					</div>
 
 					<Button disabled={isLoading} type='submit'>
+						{isLoading && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
 						Guardar usuario
 					</Button>
 				</form>
