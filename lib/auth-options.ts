@@ -72,7 +72,6 @@ export const options: NextAuthOptions = {
 		jwt: async ({ token, user, trigger, session }) => {
 			if (trigger === 'update' && session) {
 				if (session.accessToken && session.refreshToken) {
-					console.log('Refreshed token');
 					return {
 						...token,
 						accessToken: session.accessToken,

@@ -7,12 +7,14 @@ export type Operation = 'post' | 'put' | 'delete';
 
 export interface UIState {
 	operation: Operation;
-	userId: string;
+	id: string;
+	data?: any;
 }
 
 export const initialState: UIState = {
 	operation: 'post',
-	userId: '',
+	id: '',
+	data: {},
 };
 
 export const UIContext = createContext<{ state: UIState; dispatch: Dispatch<UIAction> }>({

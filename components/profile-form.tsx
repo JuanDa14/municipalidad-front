@@ -61,7 +61,7 @@ export function ProfileForm({ user }: { user: User }) {
 				<FormField
 					name='imageURL'
 					render={({ field }) => (
-						<FormItem className='flex flex-col items-center justify-center space-y-4'>
+						<FormItem className='mb-10'>
 							<FormControl>
 								<ImageUpload
 									value={field.value}
@@ -73,58 +73,60 @@ export function ProfileForm({ user }: { user: User }) {
 						</FormItem>
 					)}
 				/>
-				<FormField
-					control={form.control}
-					name='name'
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Nombre Completo</FormLabel>
-							<FormControl>
-								<Input
-									disabled={isLoading}
-									placeholder='Ingrese el nombre completo'
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name='email'
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Correo electrónico</FormLabel>
-							<FormControl>
-								<Input
-									disabled={isLoading}
-									placeholder='Ingrese el correo electrónico'
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name='password'
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Contraseña</FormLabel>
-							<FormControl>
-								<Input
-									disabled={isLoading}
-									type='password'
-									placeholder='Ingrese la contraseña'
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+				<div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+					<FormField
+						control={form.control}
+						name='name'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Nombre Completo</FormLabel>
+								<FormControl>
+									<Input
+										disabled={isLoading}
+										placeholder='Ingrese el nombre completo'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name='email'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Correo electrónico</FormLabel>
+								<FormControl>
+									<Input
+										disabled={isLoading}
+										placeholder='Ingrese el correo electrónico'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name='password'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Contraseña</FormLabel>
+								<FormControl>
+									<Input
+										disabled={isLoading}
+										type='password'
+										placeholder='Ingrese la contraseña'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
 				<Button disabled={isLoading} type='submit' className='flex ml-auto'>
 					{isLoading && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
 					Actualizar perfil

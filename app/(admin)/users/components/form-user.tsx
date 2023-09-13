@@ -25,39 +25,24 @@ import {
 } from '@/components/ui/select';
 import { ImageUpload } from '@/components/image-upload';
 import { User } from '@/interfaces/user';
-import { Role } from '@/interfaces/role';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
-import { MoreVertical } from 'lucide-react';
-import { useUserModal } from '@/hooks/useModal';
+import { Role, RolesName, RolesNameType } from '@/interfaces/role';
 import { useFetch } from '@/hooks/useFetch';
 import { Icons } from '@/components/icons';
 
-export enum RolesName {
-	ADMIN = 'Administrador',
-	SUPER_USER = 'Super Usuario',
-	USER = 'Usuario',
-}
-
-type RolesNameType = keyof typeof RolesName;
-
 const createUserSchema = z.object({
-	name: z.string().min(3, {
+	name: z.string({ required_error: 'El nombre es requerido' }).min(3, {
 		message: 'El nombre debe tener al menos 3 caracteres.',
 	}),
-	email: z.string().email({
+	email: z.string({ required_error: 'El correo es requerido' }).email({
 		message: 'Por favor, ingrese un correo electrónico válido.',
 	}),
-	password: z.string().min(3, {
+	password: z.string({ required_error: 'La contraseña es requerido' }).min(3, {
 		message: 'La contraseña debe tener al menos 8 caracteres.',
 	}),
-	imageURL: z.string().min(1, { message: 'La imagen es requerida.' }),
-	role: z.string().min(1, { message: 'El rol es requerido.' }),
+	imageURL: z.string().optional(),
+	role: z
+		.string({ required_error: 'El rol es requerido' })
+		.min(1, { message: 'El rol es requerido.' }),
 });
 
 const updateUserSchema = createUserSchema.omit({ password: true }).extend({
@@ -66,7 +51,6 @@ const updateUserSchema = createUserSchema.omit({ password: true }).extend({
 
 export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Role[] }) => {
 	const router = useRouter();
-	const { openModal } = useUserModal();
 	const rolesIds = roles.map((rol) => rol._id);
 	const { fetchWithAccessToken } = useFetch();
 
@@ -120,24 +104,6 @@ export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Ro
 									Complete todos los datos correctamente.
 								</p>
 							</div>
-							{initialData?._id && initialData.state && (
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
-										<Button size={'icon'} variant={'ghost'}>
-											<MoreVertical size={20} />
-										</Button>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent>
-										<DropdownMenuGroup>
-											<DropdownMenuItem className='cursor-pointer outline-none'>
-												<Button onClick={openModal} variant={'ghost'}>
-													Eliminar usuario
-												</Button>
-											</DropdownMenuItem>
-										</DropdownMenuGroup>
-									</DropdownMenuContent>
-								</DropdownMenu>
-							)}
 						</div>
 						<Separator className='bg-primary/10' />
 					</div>
@@ -235,7 +201,9 @@ export const FormUser = ({ initialData, roles }: { initialData?: User; roles: Ro
 													{roles.map(
 														({ name, _id }) =>
 															_id === rolId &&
-															RolesName[name.toUpperCase() as RolesNameType]
+															`${name[0].toLocaleUpperCase()}${name
+																.slice(1)
+																.toLowerCase()}`
 													)}
 												</SelectItem>
 											))}

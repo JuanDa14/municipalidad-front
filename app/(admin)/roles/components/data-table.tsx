@@ -23,37 +23,26 @@ import {
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronsUpDown, MoreVertical, Pencil, TrashIcon } from 'lucide-react';
-import Link from 'next/link';
-import { useUserModal } from '@/hooks/useModal';
-import { User } from '@/interfaces/user';
+import { ChevronDown, ChevronsUpDown, Pencil, TrashIcon } from 'lucide-react';
+import { useRoleModal } from '@/hooks/useModal';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { useUI } from '@/hooks/useUI';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { Role, RolesName, RolesNameType } from '@/interfaces/role';
 
-export function DataTable({ data }: { data: User[] }) {
+export function DataTable({ data }: { data: Role[] }) {
 	const { dispatch } = useUI();
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [sorting, setSorting] = useState<SortingState>([]);
-	const router = useRouter();
-	const { data: session } = useSession();
 
-	const onNavigate = (path: string) => {
-		router.push(path);
-	};
+	const { isOpen, closeModal, openModal, openModalForm } = useRoleModal();
 
-	const { openModal } = useUserModal();
-
-	const columns: ColumnDef<User>[] = [
+	const columns: ColumnDef<Role>[] = [
 		{
 			accessorKey: '_id',
 			id: '_id',
@@ -65,35 +54,9 @@ export function DataTable({ data }: { data: User[] }) {
 			header: 'Nombre',
 			cell: ({ row }) => (
 				<span className={cn('px-2 inline-flex text-xs leading-5 capitalize')}>
-					{row.getValue('name')}
+					{row.original.name.replace(/_/g, ' ').toLowerCase()}
 				</span>
 			),
-		},
-		{
-			accessorKey: 'role',
-			header: 'Rol',
-			cell: ({ row }) => (
-				<span className={cn('px-2 inline-flex text-xs leading-5 font-semibold capitalize')}>
-					{`${row.original.role.name[0].toLocaleUpperCase()}${row.original.role.name
-						.slice(1)
-						.replace(/_/g, ' ')
-						.toLocaleLowerCase()}`}
-				</span>
-			),
-		},
-		{
-			accessorKey: 'email',
-			header: ({ column }) => {
-				return (
-					<Button
-						variant='ghost'
-						onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-					>
-						Correo
-						<ChevronsUpDown className='ml-2 h-4 w-4' />
-					</Button>
-				);
-			},
 		},
 		{
 			accessorKey: 'state',
@@ -131,7 +94,10 @@ export function DataTable({ data }: { data: User[] }) {
 							<DropdownMenuItem>
 								<Button
 									onClick={() => {
-										dispatch({ type: 'UI-ACTIVE', payload: { id: row.original._id } });
+										dispatch({
+											type: 'UI-ACTIVE',
+											payload: { id: row.original._id, data: row.original },
+										});
 										openModal();
 									}}
 									disabled={row.getValue('state')}
@@ -143,7 +109,10 @@ export function DataTable({ data }: { data: User[] }) {
 							<DropdownMenuItem>
 								<Button
 									onClick={() => {
-										dispatch({ type: 'UI-INACTIVE', payload: { id: row.original._id } });
+										dispatch({
+											type: 'UI-INACTIVE',
+											payload: { id: row.original._id, data: row.original },
+										});
 										openModal();
 									}}
 									disabled={!row.getValue('state')}
@@ -158,31 +127,21 @@ export function DataTable({ data }: { data: User[] }) {
 			),
 		},
 		{
-			accessorKey: 'imageURL',
-			header: 'Imagen',
-			cell: ({ row }) => (
-				<Image
-					key={row.id}
-					src={row.getValue('imageURL')}
-					alt={row.getValue('name')}
-					className='w-10 h-10 rounded-full object-cover object-center'
-					width={32}
-					height={32}
-				/>
-			),
-		},
-		{
 			accessorKey: 'actions',
 			header: 'Acciones',
 			cell: ({ row }) => (
 				<div className='flex items-center justify-center gap-x-2'>
 					<Button
 						disabled={!row.getValue('state')}
-						title='Editar usuario'
+						title='Editar rol'
 						size={'icon'}
 						type='button'
 						onClick={() => {
-							onNavigate(`/users/${row.getValue('_id')}`);
+							dispatch({
+								type: 'UI-ACTIVE',
+								payload: { id: row.original._id, data: row.original },
+							});
+							openModalForm();
 						}}
 					>
 						<Pencil size={15} />
@@ -194,7 +153,7 @@ export function DataTable({ data }: { data: User[] }) {
 								dispatch({ type: 'UI-DELETE', payload: { id: row.original._id } });
 								openModal();
 							}}
-							title='Eliminar usuario'
+							title='Eliminar rol'
 							variant={'destructive'}
 							size={'icon'}
 							type='button'
@@ -227,25 +186,30 @@ export function DataTable({ data }: { data: User[] }) {
 			<div className='mt-3'>
 				<div>
 					<div className='h-16 px-4 border-b'>
-						<h2 className='text-3xl font-bold tracking-tight'>Usuarios</h2>
+						<h2 className='text-3xl font-bold tracking-tight'>Roles</h2>
 						<p className='text-sm text-foreground'>
-							Lista de los usuarios registrados en el sistema.
+							Lista de los roles registrados en el sistema.
 						</p>
 					</div>
 					<div className='my-4'>
 						<div className='flex w-full items-center justify-between'>
 							<Input
 								type='search'
-								placeholder='Buscar por email...'
-								value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+								placeholder='Buscar por nombre...'
+								value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
 								onChange={(event) =>
-									table.getColumn('email')?.setFilterValue(event.target.value)
+									table.getColumn('name')?.setFilterValue(event.target.value)
 								}
 								className='md:w-[100px] lg:w-[300px]'
 							/>
-							<Link href={'users/new'} title='Crear usuario'>
-								<Button>Nuevo usuario</Button>
-							</Link>
+							<Button
+								onClick={() => {
+									dispatch({ type: 'UI-DELETE', payload: { id: '' } });
+									openModalForm();
+								}}
+							>
+								Nuevo Rol
+							</Button>
 						</div>
 					</div>
 				</div>
@@ -272,18 +236,15 @@ export function DataTable({ data }: { data: User[] }) {
 					</TableHeader>
 					<TableBody>
 						{table.getRowModel().rows?.length ? (
-							table
-								.getRowModel()
-								.rows.filter((row) => row.original._id !== session?.user._id)
-								.map((row) => (
-									<TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-										{row.getVisibleCells().map((cell) => (
-											<TableCell key={cell.id}>
-												{flexRender(cell.column.columnDef.cell, cell.getContext())}
-											</TableCell>
-										))}
-									</TableRow>
-								))
+							table.getRowModel().rows.map((row) => (
+								<TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell key={cell.id}>
+											{flexRender(cell.column.columnDef.cell, cell.getContext())}
+										</TableCell>
+									))}
+								</TableRow>
+							))
 						) : (
 							<TableRow>
 								<TableCell colSpan={columns.length} className='h-24 text-center'>

@@ -1,21 +1,22 @@
 'use client';
 
-import { useUserModal } from '@/hooks/useModal';
+import { useRoleModal } from '@/hooks/useModal';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
 import { useUI } from '@/hooks/useUI';
 import { useFetch } from '@/hooks/useFetch';
 
-export const UserModal = () => {
-	const { isOpen, closeModal } = useUserModal();
+export const RoleModal = () => {
+	const { isOpen, closeModal } = useRoleModal();
 	const router = useRouter();
 	const { state } = useUI();
 	const { fetchWithAccessToken, fetchLoading } = useFetch();
 
-	const updateStateUser = async () => {
-		const data = await fetchWithAccessToken(`/user/state/${state.id}`, {
+	const updateStateRol = async () => {
+		const data = await fetchWithAccessToken(`/role/${state.id}`, {
 			method: 'PUT',
+			body: JSON.stringify({ state: !state.data.state }),
 		});
 
 		if (data.ok) {
@@ -24,14 +25,14 @@ export const UserModal = () => {
 		}
 	};
 
-	const deleteUser = async () => {
-		const data = await fetchWithAccessToken(`/user/${state.id}`, {
+	const deleteRol = async () => {
+		const data = await fetchWithAccessToken(`/role/${state.id}`, {
 			method: 'DELETE',
 		});
 
 		if (data.ok) {
-			router.push('/users');
 			router.refresh();
+			closeModal();
 		}
 	};
 
@@ -40,8 +41,8 @@ export const UserModal = () => {
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{state.operation === 'delete' && 'Eliminar Usuario'}
-						{state.operation === 'put' && 'Actualizar Usuario'}
+						{state.operation === 'delete' && 'Eliminar Rol'}
+						{state.operation === 'put' && 'Actualizar Rol'}
 					</DialogTitle>
 					<DialogDescription>Desea continuar con la operación?</DialogDescription>
 				</DialogHeader>
@@ -51,7 +52,7 @@ export const UserModal = () => {
 					</Button>
 					<Button
 						variant={state.operation === 'delete' ? 'destructive' : 'default'}
-						onClick={() => (state.operation === 'put' ? updateStateUser() : deleteUser())}
+						onClick={() => (state.operation === 'put' ? updateStateRol() : deleteRol())}
 						disabled={fetchLoading}
 					>
 						{state.operation === 'delete' ? 'Eliminar' : 'Actualizar'}

@@ -4,8 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { cn } from '@/lib/utils';
-import { toast } from '@/components/ui/use-toast';
 import {
 	Form,
 	FormControl,
@@ -15,17 +13,24 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { ChevronDownIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
+import { useTheme } from 'next-themes';
 
 const appearanceFormSchema = z.object({
 	theme: z.enum(['light', 'dark'], {
-		required_error: 'Please select a theme.',
+		required_error: 'Seleccione un tema.',
 	}),
 	font: z.enum(['inter', 'manrope', 'system'], {
-		invalid_type_error: 'Select a font',
-		required_error: 'Please select a font.',
+		invalid_type_error: 'Seleccione una fuente válida.',
+		required_error: 'Seleccione una fuente.',
 	}),
 });
 
@@ -33,23 +38,19 @@ type AppearanceFormValues = z.infer<typeof appearanceFormSchema>;
 
 const defaultValues: Partial<AppearanceFormValues> = {
 	theme: 'light',
+	font: 'inter',
 };
 
 export function AppearanceForm() {
+	const { setTheme } = useTheme();
+
 	const form = useForm<AppearanceFormValues>({
 		resolver: zodResolver(appearanceFormSchema),
 		defaultValues,
 	});
 
 	function onSubmit(data: AppearanceFormValues) {
-		toast({
-			title: 'You submitted the following values:',
-			description: (
-				<pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-					<code className='text-white'>{JSON.stringify(data, null, 2)}</code>
-				</pre>
-			),
-		});
+		setTheme(data.theme);
 	}
 
 	return (
@@ -60,25 +61,28 @@ export function AppearanceForm() {
 					name='font'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Font</FormLabel>
-							<div className='relative w-max'>
-								<FormControl>
-									<select
-										className={cn(
-											buttonVariants({ variant: 'outline' }),
-											'w-[200px] appearance-none bg-transparent font-normal'
-										)}
-										{...field}
-									>
-										<option value='inter'>Inter</option>
-										<option value='manrope'>Manrope</option>
-										<option value='system'>System</option>
-									</select>
-								</FormControl>
-								<ChevronDownIcon className='absolute right-3 top-2.5 h-4 w-4 opacity-50' />
-							</div>
+							<FormLabel>Fuente</FormLabel>
+							<FormControl>
+								<Select
+									onValueChange={field.onChange}
+									value={field.value}
+									defaultValue={field.value}
+								>
+									<SelectTrigger>
+										<SelectValue
+											placeholder='Selccione una fuente'
+											defaultValue={field.value}
+										/>
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value='inter'>Inter</SelectItem>
+										<SelectItem value='manrope'>Manrope</SelectItem>
+										<SelectItem value='system'>Sistema</SelectItem>
+									</SelectContent>
+								</Select>
+							</FormControl>
 							<FormDescription>
-								Set the font you want to use in the dashboard.
+								Configure la fuente que desea utilizar en el panel.
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
@@ -89,13 +93,13 @@ export function AppearanceForm() {
 					name='theme'
 					render={({ field }) => (
 						<FormItem className='space-y-1'>
-							<FormLabel>Theme</FormLabel>
-							<FormDescription>Select the theme for the dashboard.</FormDescription>
+							<FormLabel>Tema</FormLabel>
+							<FormDescription>Seleccione el tema para el panel.</FormDescription>
 							<FormMessage />
 							<RadioGroup
 								onValueChange={field.onChange}
 								defaultValue={field.value}
-								className='grid max-w-md grid-cols-2 gap-8 pt-2'
+								className='grid grid-cols-2 gap-x-10 pt-2'
 							>
 								<FormItem>
 									<FormLabel className='[&:has([data-state=checked])>div]:border-primary'>
@@ -119,7 +123,7 @@ export function AppearanceForm() {
 											</div>
 										</div>
 										<span className='block w-full p-2 text-center font-normal'>
-											Light
+											Claro
 										</span>
 									</FormLabel>
 								</FormItem>
@@ -144,7 +148,9 @@ export function AppearanceForm() {
 												</div>
 											</div>
 										</div>
-										<span className='block w-full p-2 text-center font-normal'>Dark</span>
+										<span className='block w-full p-2 text-center font-normal'>
+											Oscuro
+										</span>
 									</FormLabel>
 								</FormItem>
 							</RadioGroup>
@@ -152,7 +158,9 @@ export function AppearanceForm() {
 					)}
 				/>
 
-				<Button type='submit'>Update preferences</Button>
+				<Button type='submit' className='flex ml-auto'>
+					Actualizar preferencias
+				</Button>
 			</form>
 		</Form>
 	);

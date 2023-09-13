@@ -6,6 +6,8 @@ import { Suspense } from 'react';
 import Loading from './loading';
 
 const inter = Inter({ subsets: ['latin'] });
+const manrope = Inter({ subsets: ['latin'] });
+const system = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
 	title: 'Municipalidad - San José',

@@ -1,6 +1,16 @@
 'use client';
 
-import { Home, Settings, Users, Folder } from 'lucide-react';
+import {
+	Home,
+	Settings,
+	Users,
+	Folder,
+	ServerIcon,
+	KeyIcon,
+	GrapeIcon,
+	LibraryIcon,
+	List,
+} from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { cn } from '@/lib/utils';
@@ -25,9 +35,39 @@ export const Sidebar = () => {
 			private: true,
 		},
 		{
+			icon: List,
+			href: '/roles',
+			label: 'Roles',
+			private: true,
+		},
+		{
 			icon: Folder,
 			href: '/reports',
 			label: 'Reportes',
+			private: true,
+		},
+		{
+			icon: Users,
+			href: '/clients',
+			label: 'Clientes',
+			private: true,
+		},
+		{
+			icon: ServerIcon,
+			href: '/services',
+			label: 'Servicios',
+			private: true,
+		},
+		{
+			icon: KeyIcon,
+			href: '/licenses',
+			label: 'Licencias',
+			private: true,
+		},
+		{
+			icon: LibraryIcon,
+			href: '/graphs',
+			label: 'Gráficas',
 			private: true,
 		},
 		{
@@ -52,7 +92,11 @@ export const Sidebar = () => {
 							className={cn(
 								'text-xs group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition',
 								pathname === route.href && 'bg-primary/10 text-primary',
-								route.private ? (session?.user.role.name === 'ADMIN' ? '' : 'hidden') : ''
+								route.private
+									? session?.user.role.name.toLocaleUpperCase() === 'ADMINISTRADOR'
+										? ''
+										: 'hidden'
+									: ''
 							)}
 							key={route.href}
 						>

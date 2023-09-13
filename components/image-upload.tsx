@@ -33,7 +33,6 @@ export const ImageUpload = ({ value, onChange, disabled }: Props) => {
 			)}
 		>
 			<CldUploadButton
-				className='z-[60]'
 				options={{
 					maxFiles: 1,
 				}}
