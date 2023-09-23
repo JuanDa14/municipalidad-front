@@ -30,10 +30,11 @@ export const useFetch = () => {
 
 			if (isMounted) {
 				if (!data.ok) {
+					const message = data.errors[0].msg || 'Error inesperado, intente nuevamente.';
 					toast({
 						variant: 'destructive',
 						title: 'Error',
-						description: 'Error al realizar la operación.',
+						description: message,
 						duration: 3000,
 					});
 				} else {

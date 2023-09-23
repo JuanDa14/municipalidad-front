@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { useAuth } from '@/hooks/useAuth';
 import { Spinner } from '@/components/ui/spinner';
+import { ClientModal } from '@/components/client-modal';
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 	const { fecthWithRefreshToken } = useFetch();
@@ -51,6 +52,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 				<UserModal />
 				<RoleModal />
 				<ProfileUser />
+				<ClientModal />
 				{children}
 			</main>
 		</div>

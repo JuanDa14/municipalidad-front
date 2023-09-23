@@ -32,3 +32,9 @@ export const useRoleModal = create<ModalStateForm>((set) => ({
 	openModalForm: () => set(() => ({ isOpenForm: true })),
 	closeModalForm: () => set(() => ({ isOpenForm: false })),
 }));
+
+export const useClientModal = create<ModalState>((set) => ({
+	isOpen: false,
+	openModal: () => set(() => ({ isOpen: true })),
+	closeModal: () => set(() => ({ isOpen: false })),
+}));

@@ -1,6 +1,6 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,6 +26,8 @@ const formSchema = z.object({
 });
 
 export const SignInForm = () => {
+	const { status } = useSession();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -79,7 +81,7 @@ export const SignInForm = () => {
 						</FormItem>
 					)}
 				/>
-				<Button disabled={isLoading} type='submit' className='w-full'>
+				<Button disabled={isLoading || status === 'loading'} type='submit' className='w-full'>
 					{isLoading && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
 					Ingresar
 				</Button>
