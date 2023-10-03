@@ -1,36 +1,33 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
+
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
-	DropdownMenuPortal,
 	DropdownMenuSeparator,
 	DropdownMenuShortcut,
-	DropdownMenuSub,
-	DropdownMenuSubContent,
-	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { signOut, useSession } from 'next-auth/react';
-import { Button } from './ui/button';
-import { useUserProfileModal } from '@/hooks/useModal';
-import { useTheme } from 'next-themes';
+import { Button } from '@/components/ui/button';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export const SettingsUserButton = () => {
 	const router = useRouter();
-	const { setTheme } = useTheme();
 
 	const { data: session } = useSession();
 
-	const { openModal } = useUserProfileModal();
-
 	const handleSignOut = () => {
 		signOut({ callbackUrl: '/login' });
+	};
+
+	const onNavigate = (url: string) => {
+		router.push(url);
 	};
 
 	return (
@@ -46,15 +43,15 @@ export const SettingsUserButton = () => {
 			<DropdownMenuContent className='w-56' align='end' forceMount>
 				<DropdownMenuLabel className='font-normal'>
 					<div className='flex flex-col space-y-1'>
-						<p className='text-sm font-medium leading-none'>{session?.user?.name}</p>
-						<p className='text-xs leading-none text-muted-foreground'>
+						<span className='text-sm font-medium leading-none'>{session?.user?.name}</span>
+						<span className='text-xs leading-none text-muted-foreground'>
 							{session?.user?.email}
-						</p>
+						</span>
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
-					<DropdownMenuItem onClick={openModal}>
+					<DropdownMenuItem onClick={() => onNavigate('/settings')}>
 						Perfil
 						<DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
 					</DropdownMenuItem>
@@ -62,18 +59,9 @@ export const SettingsUserButton = () => {
 						Facturación
 						<DropdownMenuShortcut>⌘F</DropdownMenuShortcut>
 					</DropdownMenuItem>
-					<DropdownMenuSub>
-						<DropdownMenuSubTrigger>Tema</DropdownMenuSubTrigger>
-						<DropdownMenuPortal>
-							<DropdownMenuSubContent>
-								<DropdownMenuItem onClick={() => setTheme('light')}>Claro</DropdownMenuItem>
-								<DropdownMenuItem onClick={() => setTheme('dark')}>Oscuro</DropdownMenuItem>
-								<DropdownMenuItem onClick={() => setTheme('system')}>
-									Sistema
-								</DropdownMenuItem>
-							</DropdownMenuSubContent>
-						</DropdownMenuPortal>
-					</DropdownMenuSub>
+
+					<ModeToggle />
+
 					<DropdownMenuItem>
 						Configuración
 						<DropdownMenuShortcut>⌘C</DropdownMenuShortcut>

@@ -1,13 +1,13 @@
-import './globals.css';
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+
 import { NextAuthProvider } from './provider';
-import { Suspense } from 'react';
 import Loading from './loading';
 
+import './globals.css';
+
 const inter = Inter({ subsets: ['latin'] });
-const manrope = Inter({ subsets: ['latin'] });
-const system = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
 	title: 'Municipalidad - San José',

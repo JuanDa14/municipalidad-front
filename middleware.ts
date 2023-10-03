@@ -8,9 +8,11 @@ export const config = {
 		'/api/auth/callback',
 		'/api/auth/csrf',
 
-		'/dashboard/:path*',
-		'/users/:path*',
-		'/reports/:path*',
 		'/clients/:path*',
+		'/dashboard/:path*',
+		'/reports/:path*',
+		'/roles/:path*',
+		'/settings/:path*',
+		'/users/:path*',
 	],
 };

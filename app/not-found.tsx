@@ -1,5 +1,3 @@
-'use client';
-
 const NotFound = () => {
 	return (
 		<div className='flex flex-col md:flex-row items-center justify-center h-screen gap-2'>
@@ -9,4 +7,5 @@ const NotFound = () => {
 		</div>
 	);
 };
+
 export default NotFound;

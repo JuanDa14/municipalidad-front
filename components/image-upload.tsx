@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CldUploadButton } from 'next-cloudinary';
 import Image from 'next/image';
-import { useUserProfileModal } from '@/hooks/useModal';
+import { CldUploadButton } from 'next-cloudinary';
+
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -14,8 +14,6 @@ interface Props {
 
 export const ImageUpload = ({ value, onChange, disabled }: Props) => {
 	const [isMounted, setIsMounted] = useState(false);
-
-	const { isOpen, closeModal, openModal } = useUserProfileModal();
 
 	useEffect(() => {
 		setIsMounted(true);

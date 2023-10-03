@@ -8,4 +8,5 @@ export interface Client {
 	direction: string;
 	type: ClientType;
 	dni: string;
+	state: boolean;
 }

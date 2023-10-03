@@ -1,42 +1,36 @@
 'use client';
 
-import { UserModal } from '@/components/user-modal';
-import { Navbar } from '@/components/navbar';
-import { Sidebar } from '@/components/sidebar';
-import { ProfileUser } from '@/components/profile-user';
-import { RoleModal } from '@/components/role-modal';
-import { useFetch } from '@/hooks/useFetch';
 import { useEffect } from 'react';
 import { signOut, useSession } from 'next-auth/react';
-import { useAuth } from '@/hooks/useAuth';
-import { Spinner } from '@/components/ui/spinner';
-import { ClientModal } from '@/components/client-modal';
 
-const AdminLayout = ({ children }: { children: React.ReactNode }) => {
-	const { fecthWithRefreshToken } = useFetch();
+import { Navbar } from '@/components/navbar';
+import { Sidebar } from '@/components/sidebar';
+import { Spinner } from '@/components/ui/spinner';
+import { useFetch } from '@/hooks/useFetch';
+
+interface AdminLayoutProps {
+	children: React.ReactNode;
+}
+
+const AdminLayout = ({ children }: AdminLayoutProps) => {
+	const { fetchWithToken } = useFetch();
 	const { status, update } = useSession();
-	const { dispatch } = useAuth();
 
 	useEffect(() => {
-		let interval: NodeJS.Timeout;
-		if (status === 'authenticated') {
-			interval = setInterval(async () => {
-				console.log('refreshing token');
-				const data = await fecthWithRefreshToken();
-				if (data?.ok) {
-					update(data);
-				} else {
-					dispatch({ type: 'LOGOUT' });
-					signOut({
-						redirect: true,
-						callbackUrl: '/login',
-					});
-				}
-			}, 60 * 60 * 1000);
-		}
+		const interval = setInterval(async () => {
+			const data = await fetchWithToken('/auth/refresh-token');
+			if (data?.ok) {
+				update(data);
+			} else {
+				signOut({
+					redirect: true,
+					callbackUrl: '/login',
+				});
+			}
+		}, 50 * 60 * 1000);
 
 		return () => clearInterval(interval);
-	}, [update]);
+	}, [update, fetchWithToken]);
 
 	if (status === 'loading') {
 		return <Spinner />;
@@ -48,13 +42,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 			<div className='hidden md:flex mt-16 w-48 flex-col fixed inset-y-0'>
 				<Sidebar />
 			</div>
-			<main className='md:pl-48 pt-16 h-full'>
-				<UserModal />
-				<RoleModal />
-				<ProfileUser />
-				<ClientModal />
-				{children}
-			</main>
+			<main className='md:pl-48 pt-16 h-full'>{children}</main>
 		</div>
 	);
 };

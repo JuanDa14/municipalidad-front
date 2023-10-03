@@ -1,8 +1,9 @@
 'use client';
 
-import { toast } from '@/components/ui/use-toast';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+
+import { toast } from '@/components/ui/use-toast';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -11,7 +12,7 @@ export const useFetch = () => {
 	const [isMounted, setIsMounted] = useState(true);
 	const { data: session } = useSession();
 
-	const fetchWithAccessToken = async (path: string, options?: RequestInit) => {
+	const fetchWithToken = async (path: string, options?: RequestInit) => {
 		try {
 			setFetchLoading(true);
 
@@ -19,7 +20,9 @@ export const useFetch = () => {
 				...options,
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session?.accessToken}`,
+					Authorization: `Bearer ${
+						path === '/auth/refresh-token' ? session?.refreshToken : session?.accessToken
+					}`,
 				},
 			});
 
@@ -61,7 +64,7 @@ export const useFetch = () => {
 				return { ok: false };
 			}
 		} catch (error) {
-			console.log(error);
+			console.log('[ERROR USEFETCH]', error);
 			toast({
 				variant: 'destructive',
 				title: 'Error',
@@ -74,58 +77,11 @@ export const useFetch = () => {
 		}
 	};
 
-	const fecthWithRefreshToken = async () => {
-		try {
-			setFetchLoading(true);
-			const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session?.refreshToken}`,
-				},
-			});
-			const data = (await res.json()) as {
-				ok: boolean;
-				[key: string]: any;
-			};
-			if (isMounted) {
-				if (data.ok) {
-					return data;
-				} else {
-					toast({
-						variant: 'destructive',
-						title: 'Error',
-						description: 'Su sesión ha expirado, inicie sesión nuevamente.',
-						duration: 3000,
-					});
-					return { ok: false };
-				}
-			} else {
-				toast({
-					variant: 'destructive',
-					title: 'Error',
-					description: 'Error inesperado, intente nuevamente.',
-					duration: 3000,
-				});
-				return { ok: false };
-			}
-		} catch (error) {
-			console.log(error);
-			toast({
-				variant: 'destructive',
-				title: 'Error',
-				description: 'Error inesperado, intente nuevamente.',
-				duration: 3000,
-			});
-		} finally {
-			setFetchLoading(false);
-		}
-	};
-
 	useEffect(() => {
 		return () => {
 			setIsMounted(false);
 		};
 	}, []);
 
-	return { fetchLoading, fetchWithAccessToken, fecthWithRefreshToken };
+	return { fetchLoading, fetchWithToken };
 };

@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-import { cn } from '@/lib/utils';
 import { MobileNavbar } from '@/components/mobile-navbar';
 import { SettingsUserButton } from '@/components/settings-user-button';
+import { cn } from '@/lib/utils';
 
 export const Navbar = () => {
 	return (
