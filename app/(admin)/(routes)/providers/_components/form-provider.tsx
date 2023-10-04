@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
@@ -18,6 +17,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+
+import { Icons } from '@/components/icons';
+import { ConfirmModal } from '@/components/modals/confirm-modal';
+import { useFetch } from '@/hooks/useFetch';
+import { InputSearch } from '@/components/input-search';
+import { toast } from '@/components/ui/use-toast';
+import { useState } from 'react';
 import {
 	Select,
 	SelectContent,
@@ -25,56 +31,42 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { Icons } from '@/components/icons';
-import { ConfirmModal } from '@/components/modals/confirm-modal';
-import { useFetch } from '@/hooks/useFetch';
-import { Client } from '@/interfaces/client';
-import { InputSearch } from '@/components/input-search';
-import { toast } from '@/components/ui/use-toast';
 
-const createClientSchema = z.object({
+const createProviderSchema = z.object({
 	name: z.string({ required_error: 'El nombre es requerido' }).min(3, {
 		message: 'El nombre debe tener al menos 3 caracteres.',
 	}),
-	phone: z
-		.string({ required_error: 'El teléfono es requerido' })
-		.min(9, {
-			message: 'El teléfono debe tener al menos 9 caracteres.',
-		})
-		.max(9, {
-			message: 'El teléfono debe tener máximo 9 caracteres.',
-		}),
+	condition: z.enum(['HABIDO', 'NO HABIDO'], { required_error: 'La condicion es requerida' }),
+	state: z.enum(['ACTIVO', 'INACTIVO'], { required_error: 'El estado es requerido' }),
 	direction: z.string({ required_error: 'La direccion es obligatoria' }).max(200, {
 		message: 'La dirección debe tener máximo 100 caracteres.',
 	}),
-	document_type: z.enum(['DNI', 'RUC']),
-	dni_ruc: z.string({ required_error: 'El DNI/RUC es requerido' }),
-	email: z.string({ required_error: 'El email es requerido' }).email({
-		message: 'El email debe ser válido',
-	}),
+	dni_ruc: z.string({ required_error: 'El RUC es requerido' }),
+	document_type: z.enum(['DNI', 'RUC'], { required_error: 'El tipo de documento es requerido' }),
 });
 
 interface FormClientProps {
-	initialData?: Client;
+	initialData?: any;
 }
 
-export const FormClient = ({ initialData }: FormClientProps) => {
+export const FormProvider = ({ initialData }: FormClientProps) => {
 	const router = useRouter();
 
 	const { fetchWithToken, fetchLoading } = useFetch();
-
 	const [IsLoadingSearch, setIsLoadingSearch] = useState(false);
 
-	const form = useForm<z.infer<typeof createClientSchema>>({
-		resolver: zodResolver(createClientSchema),
-		defaultValues: initialData || {
-			name: '',
-			phone: '',
-			direction: '',
-			dni_ruc: '',
-			document_type: 'DNI',
-			email: '',
-		},
+	const form = useForm<z.infer<typeof createProviderSchema>>({
+		resolver: zodResolver(createProviderSchema),
+		defaultValues: initialData
+			? { ...initialData, state: initialData.state ? 'ACTIVO' : 'INACTIVO' }
+			: {
+					document_type: 'RUC',
+					name: '',
+					dni_ruc: '',
+					direction: '',
+					state: 'ACTIVO',
+					condition: 'HABIDO',
+			  },
 	});
 
 	const { isSubmitting } = form.formState;
@@ -105,7 +97,8 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 
 			form.setValue('name', data.nombre);
 			form.setValue('direction', data.direccion);
-			form.setValue('phone', data.numero);
+			form.setValue('condition', data.condicion);
+			form.setValue('state', data.estado);
 		} catch {
 			toast({
 				title: 'Error',
@@ -117,31 +110,31 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 		}
 	};
 
-	const onSubmit = async (values: z.infer<typeof createClientSchema>) => {
+	const onSubmit = async (values: z.infer<typeof createProviderSchema>) => {
 		if (initialData) {
-			await fetchWithToken(`/client/${initialData._id}`, {
+			await fetchWithToken(`/provider/${initialData._id}`, {
 				method: 'PUT',
 				body: JSON.stringify(values),
 			});
 		} else {
-			await fetchWithToken('/client', {
+			await fetchWithToken('/provider', {
 				method: 'POST',
 				body: JSON.stringify(values),
 			});
 		}
-		router.push('/clients');
+		router.push('/providers');
 		router.refresh();
 	};
 
 	const onDelete = async () => {
 		if (!initialData) return;
 
-		await fetchWithToken(`/client/${initialData._id}`, {
+		await fetchWithToken(`/provider/${initialData._id}`, {
 			method: 'PUT',
 			body: JSON.stringify({ state: !initialData.state }),
 		});
 
-		router.push('/clients');
+		router.push('/providers');
 		router.refresh();
 	};
 
@@ -152,7 +145,7 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 					<div className='flex items-center justify-between gap-x-2 space-y-2 w-full'>
 						<div className='flex justify-between'>
 							<div className='text-lg font-medium'>
-								<h3>Formulario de Cliente</h3>
+								<h3>Formulario de Proveedor</h3>
 								<p className='text-sm text-muted-foreground'>
 									Complete todos los datos correctamente.
 								</p>
@@ -196,7 +189,7 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 											<SelectTrigger className='bg-background'>
 												<SelectValue
 													defaultValue={field.value}
-													placeholder='Seleccione el tipo de documento'
+													placeholder='Seleccione...'
 												/>
 											</SelectTrigger>
 										</FormControl>
@@ -213,8 +206,8 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 							)}
 						/>
 						<FormField
-							control={form.control}
 							name='dni_ruc'
+							control={form.control}
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>DNI/RUC</FormLabel>
@@ -229,55 +222,21 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 								</FormItem>
 							)}
 						/>
+
 						<FormField
-							control={form.control}
 							name='name'
+							control={form.control}
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Nombre</FormLabel>
 									<FormControl>
 										<Input
+											{...field}
 											disabled={isSubmitting}
 											placeholder='Ingrese el nombre'
-											{...field}
 										/>
 									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
 
-						<FormField
-							control={form.control}
-							name='email'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Correo</FormLabel>
-									<FormControl>
-										<Input
-											disabled={isSubmitting}
-											placeholder='Ingrese el correo'
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name='phone'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Telefono</FormLabel>
-									<FormControl>
-										<Input
-											type='number'
-											disabled={isSubmitting}
-											placeholder='Ingrese el teléfono'
-											{...field}
-										/>
-									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -292,10 +251,75 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 									<FormControl>
 										<Input
 											disabled={isSubmitting}
-											placeholder='Ingrese la dirección'
+											placeholder='Ingrese la direccion'
 											{...field}
 										/>
 									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='condition'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Condicion</FormLabel>
+									<Select
+										disabled={isSubmitting}
+										onValueChange={field.onChange}
+										value={field.value}
+										defaultValue={field.value}
+									>
+										<FormControl>
+											<SelectTrigger className='bg-background'>
+												<SelectValue
+													defaultValue={field.value}
+													placeholder='Seleccione...'
+												/>
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											{['HABIDO', 'NO HABIDO'].map((row) => (
+												<SelectItem value={row} key={row}>
+													{row}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							name='state'
+							control={form.control}
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Estado</FormLabel>
+									<Select
+										disabled={isSubmitting}
+										onValueChange={field.onChange}
+										value={field.value}
+										defaultValue={field.value}
+									>
+										<FormControl>
+											<SelectTrigger className='bg-background'>
+												<SelectValue
+													defaultValue={field.value}
+													placeholder='Seleccione...'
+												/>
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											{['ACTIVO', 'INACTIVO'].map((row) => (
+												<SelectItem value={row} key={row}>
+													{row}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -304,7 +328,7 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 
 					<Button disabled={isSubmitting} type='submit' className='flex ml-auto'>
 						{isSubmitting && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
-						Guardar cliente
+						Guardar proveedor
 					</Button>
 				</form>
 			</Form>

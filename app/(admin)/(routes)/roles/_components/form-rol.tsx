@@ -35,7 +35,8 @@ interface FormRolProps {
 
 export const FormRol = ({ initialData }: FormRolProps) => {
 	const router = useRouter();
-	const { fetchWithToken } = useFetch();
+
+	const { fetchWithToken, fetchLoading } = useFetch();
 
 	const form = useForm<z.infer<typeof createRolSchema>>({
 		resolver: zodResolver(createRolSchema),
@@ -86,15 +87,18 @@ export const FormRol = ({ initialData }: FormRolProps) => {
 							</div>
 						</div>
 						<div className='flex gap-x-2 items-center'>
-							<Link href={'/roles'}>
-								<Button variant={'outline'}>
-									<ArrowLeft className='h-4 w-4 mr-2' />
-									Atras
-								</Button>
-							</Link>
+							<Button
+								type='button'
+								variant={'outline'}
+								disabled={fetchLoading}
+								onClick={() => router.back()}
+							>
+								<ArrowLeft className='h-4 w-4 mr-2' />
+								Atras
+							</Button>
 							{initialData && (
-								<ConfirmModal onConfirm={onDelete}>
-									<Button>
+								<ConfirmModal onConfirm={onDelete} disabled={fetchLoading}>
+									<Button disabled={fetchLoading}>
 										<Trash className='h-4 w-4 mr-2' />
 										Eliminar
 									</Button>

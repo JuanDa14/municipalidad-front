@@ -1,12 +1,12 @@
-export type ClientType = 'Jurídico' | 'Natural';
+export type DocumentType = 'DNI' | 'RUC';
 
 export interface Client {
 	_id: string;
-	first_name: string;
-	last_name: string;
+	name: string;
+	email: string;
 	phone: string;
 	direction: string;
-	type: ClientType;
-	dni: string;
+	document_type: DocumentType;
+	dni_ruc: string;
 	state: boolean;
 }

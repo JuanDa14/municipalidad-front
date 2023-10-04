@@ -19,6 +19,7 @@ import { ImageUpload } from '@/components/image-upload';
 import { Icons } from '@/components/icons';
 import { User } from '@/interfaces/user';
 import { useFetch } from '@/hooks/useFetch';
+import { useRouter } from 'next/navigation';
 
 const SettingsFormSchema = z.object({
 	name: z.string().min(3, {
@@ -41,6 +42,8 @@ type SettingsFormValues = z.infer<typeof SettingsFormSchema>;
 export function SettingsForm({ user }: { user: User }) {
 	const { fetchWithToken } = useFetch();
 
+	const router = useRouter();
+
 	const { data: session, update } = useSession();
 
 	const form = useForm<SettingsFormValues>({
@@ -58,6 +61,8 @@ export function SettingsForm({ user }: { user: User }) {
 
 		if (data.ok) {
 			await update({ user: data.user });
+			router.push('/dashboard');
+			router.refresh();
 		}
 	}
 

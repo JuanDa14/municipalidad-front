@@ -25,12 +25,12 @@ import {
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Client } from '@/interfaces/client';
 import { PlusCircle } from 'lucide-react';
+import { Provider } from '@/interfaces/provider';
 
 interface DataTableProps {
-	data: Client[];
-	columns: ColumnDef<Client>[];
+	data: Provider[];
+	columns: ColumnDef<Provider>[];
 }
 
 export function DataTable({ data, columns }: DataTableProps) {
@@ -57,9 +57,9 @@ export function DataTable({ data, columns }: DataTableProps) {
 			<div>
 				<div>
 					<div className='h-16 px-4 border-b'>
-						<h2 className='text-3xl font-bold tracking-tight'>Clientes</h2>
+						<h2 className='text-3xl font-bold tracking-tight'>Proveedores</h2>
 						<p className='text-sm text-foreground'>
-							Lista de los clientes registrados en el sistema.
+							Lista de los proveedores registrados en el sistema.
 						</p>
 					</div>
 					<div className='my-4'>
@@ -73,10 +73,10 @@ export function DataTable({ data, columns }: DataTableProps) {
 								}
 								className='w-[300px] md:w-[400px]'
 							/>
-							<Link href={'clients/create'} title='Crear cliente'>
+							<Link href={'/providers/create'}>
 								<Button>
 									<PlusCircle className='w-4 h-4 mr-2' />
-									Nuevo cliente
+									Nuevo proveedor
 								</Button>
 							</Link>
 						</div>

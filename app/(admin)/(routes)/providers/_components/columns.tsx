@@ -5,11 +5,11 @@ import { ArrowUpDown, Pencil } from 'lucide-react';
 
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
-import { Client } from '@/interfaces/client';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Provider } from '@/interfaces/provider';
 
-export const columns: ColumnDef<Client>[] = [
+export const columns: ColumnDef<Provider>[] = [
 	{
 		accessorKey: 'dni_ruc',
 		header: ({ column }) => {
@@ -40,35 +40,26 @@ export const columns: ColumnDef<Client>[] = [
 		},
 		cell: ({ row }) => <span className='text-xs capitalize'>{row.original.name}</span>,
 	},
-	{
-		accessorKey: 'phone',
-		header: 'Teléfono',
-		cell: ({ row }) => <span className='text-xs capitalize'>{row.original.phone}</span>,
-	},
+
 	{
 		accessorKey: 'direction',
 		header: 'Dirección',
 		cell: ({ row }) => <span className='text-xs capitalize'>{row.original.direction}</span>,
 	},
 	{
-		accessorKey: 'document_type',
+		accessorKey: 'condition',
 		header: ({ column }) => {
 			return (
 				<Button
 					variant='ghost'
 					onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
 				>
-					Documento
+					Condicion
 					<ArrowUpDown className='ml-2 h-4 w-4' />
 				</Button>
 			);
 		},
-		cell: ({ row }) => <span className='text-xs capitalize'>{row.original.document_type}</span>,
-	},
-	{
-		accessorKey: 'email',
-		header: 'Correo',
-		cell: ({ row }) => <span className='text-xs'>{row.original.email}</span>,
+		cell: ({ row }) => <span className='text-xs capitalize'>{row.original.condition}</span>,
 	},
 	{
 		accessorKey: 'state',
@@ -94,13 +85,8 @@ export const columns: ColumnDef<Client>[] = [
 		header: 'Acciones',
 		cell: ({ row }) => (
 			<div className='flex items-center justify-center gap-x-2'>
-				<Link href={`/clients/${row.original._id}`}>
-					<Button
-						disabled={!row.original.state}
-						title='Editar cliente'
-						size={'icon'}
-						type='button'
-					>
+				<Link href={`/providers/${row.original._id}`}>
+					<Button disabled={!row.original.state} size={'icon'} type='button'>
 						<Pencil className='w-4 h-4' />
 					</Button>
 				</Link>

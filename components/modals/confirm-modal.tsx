@@ -15,9 +15,10 @@ import {
 interface ConfirmModalProps {
 	children: React.ReactNode;
 	onConfirm: () => void;
+	disabled: boolean;
 }
 
-export const ConfirmModal = ({ children, onConfirm }: ConfirmModalProps) => {
+export const ConfirmModal = ({ children, onConfirm, disabled }: ConfirmModalProps) => {
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
@@ -27,8 +28,10 @@ export const ConfirmModal = ({ children, onConfirm }: ConfirmModalProps) => {
 					<AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancelar</AlertDialogCancel>
-					<AlertDialogAction onClick={onConfirm}>Continuar</AlertDialogAction>
+					<AlertDialogCancel disabled={disabled}>Cancelar</AlertDialogCancel>
+					<AlertDialogAction onClick={onConfirm} disabled={disabled}>
+						Continuar
+					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>

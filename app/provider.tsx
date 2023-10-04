@@ -1,7 +1,7 @@
 'use client';
 
 import { ThemeProvider } from '@/components/theme-provider';
-import { ToastProvider } from '@/components/ui/toast';
+import { ToastProvider } from '@/components/providers/toast-provider';
 import { SessionProvider } from 'next-auth/react';
 
 interface NextAuthProviderProps {

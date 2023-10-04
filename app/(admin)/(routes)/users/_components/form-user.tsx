@@ -63,7 +63,7 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 
 	const rolesIds = roles.map((rol) => rol._id);
 
-	const { fetchWithToken } = useFetch();
+	const { fetchWithToken, fetchLoading } = useFetch();
 
 	const form = useForm<z.infer<typeof createUserSchema>>({
 		resolver: zodResolver(initialData ? updateUserSchema : createUserSchema),
@@ -122,15 +122,18 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 							</div>
 						</div>
 						<div className='flex gap-x-2 items-center'>
-							<Link href={'/users'}>
-								<Button variant={'outline'}>
-									<ArrowLeft className='h-4 w-4 mr-2' />
-									Atras
-								</Button>
-							</Link>
+							<Button
+								type='button'
+								disabled={fetchLoading}
+								variant={'outline'}
+								onClick={() => router.back()}
+							>
+								<ArrowLeft className='h-4 w-4 mr-2' />
+								Atras
+							</Button>
 							{initialData && (
-								<ConfirmModal onConfirm={onDelete}>
-									<Button>
+								<ConfirmModal disabled={fetchLoading} onConfirm={onDelete}>
+									<Button disabled={fetchLoading}>
 										<Trash className='h-4 w-4 mr-2' />
 										Eliminar
 									</Button>

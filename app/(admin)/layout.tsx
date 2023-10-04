@@ -20,7 +20,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 		const interval = setInterval(async () => {
 			const data = await fetchWithToken('/auth/refresh-token');
 			if (data?.ok) {
-				update(data);
+				await update(data);
 			} else {
 				signOut({
 					redirect: true,

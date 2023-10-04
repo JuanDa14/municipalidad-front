@@ -60,13 +60,13 @@ export const Sidebar = () => {
 		},
 		{
 			icon: KeyIcon,
-			href: '/licenses',
-			label: 'Licencias',
+			href: '/providers',
+			label: 'Proveedores',
 			private: true,
 		},
 		{
 			icon: LibraryIcon,
-			href: '/graphs',
+			href: '/charts',
 			label: 'Gráficas',
 			private: true,
 		},
