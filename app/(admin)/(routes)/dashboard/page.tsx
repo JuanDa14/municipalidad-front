@@ -1,7 +1,5 @@
 import { Metadata } from 'next';
-import { getServerSession } from 'next-auth';
 
-import { options } from '@/lib/auth-options';
 import { User } from '@/interfaces/user';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,21 +14,14 @@ export const metadata: Metadata = {
 	description: 'Example dashboard app built using the components.',
 };
 
-async function getUsers(accessToken: string): Promise<User[]> {
-	const resp = await fetch(`${process.env.API_URL}/user`, {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
-
+async function getUsers(): Promise<User[]> {
+	const resp = await fetch(`${process.env.API_URL}/user`, { cache: 'no-cache' });
 	const data = await resp.json();
-
-	return data.users;
+	return data;
 }
 
 export default async function DashboardPage() {
-	const session = await getServerSession(options);
-	const users = await getUsers(session!.accessToken);
+	const users = await getUsers();
 
 	return (
 		<div className='flex-col md:flex'>

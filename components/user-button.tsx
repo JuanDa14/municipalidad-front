@@ -17,7 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ModeToggle } from '@/components/mode-toggle';
 
-export const SettingsUserButton = () => {
+export const UserButton = () => {
 	const router = useRouter();
 
 	const { data: session } = useSession();

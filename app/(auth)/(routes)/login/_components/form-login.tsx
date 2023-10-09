@@ -1,6 +1,6 @@
 'use client';
 
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,32 +13,29 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Icons } from '@/components/icons';
+import { ButtonLoading } from '@/components/button-loading';
 
-const formSchema = z.object({
-	email: z.string().email({
+const formLoginSchema = z.object({
+	email: z.string({ required_error: 'El email es requerido' }).email({
 		message: 'Por favor, ingrese un correo electrónico válido.',
 	}),
-	password: z.string().min(6, {
+	password: z.string({ required_error: 'La contraseña es requerida' }).min(6, {
 		message: 'La contraseña debe tener al menos 6 caracteres.',
 	}),
 });
 
-export const SignInForm = () => {
-	const { status } = useSession();
-
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+export const FormLogin = () => {
+	const form = useForm<z.infer<typeof formLoginSchema>>({
+		resolver: zodResolver(formLoginSchema),
 		defaultValues: {
 			email: 'admin@test.com',
 			password: 'password',
 		},
 	});
 
-	const isLoading = form.formState.isSubmitting;
+	const { isSubmitting } = form.formState;
 
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+	const onSubmit = async (values: z.infer<typeof formLoginSchema>) => {
 		await signIn('credentials', {
 			email: values.email,
 			password: values.password,
@@ -57,7 +54,7 @@ export const SignInForm = () => {
 						<FormItem>
 							<FormLabel>Correo electrónico</FormLabel>
 							<FormControl>
-								<Input disabled={isLoading} placeholder='test@gmail.com' {...field} />
+								<Input disabled={isSubmitting} placeholder='correo...' {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -71,9 +68,9 @@ export const SignInForm = () => {
 							<FormLabel>Contraseña</FormLabel>
 							<FormControl>
 								<Input
-									disabled={isLoading}
+									disabled={isSubmitting}
 									type='password'
-									placeholder='********'
+									placeholder='contraseña...'
 									{...field}
 								/>
 							</FormControl>
@@ -81,10 +78,12 @@ export const SignInForm = () => {
 						</FormItem>
 					)}
 				/>
-				<Button disabled={isLoading || status === 'loading'} type='submit' className='w-full'>
-					{isLoading && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
-					Ingresar
-				</Button>
+				<ButtonLoading
+					isSubmitting={isSubmitting}
+					label='Iniciar sesión'
+					type='submit'
+					className='w-full'
+				/>
 			</form>
 		</Form>
 	);

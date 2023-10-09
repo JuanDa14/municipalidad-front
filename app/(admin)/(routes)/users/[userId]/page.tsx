@@ -1,39 +1,28 @@
-import { getServerSession } from 'next-auth';
-import { options } from '@/lib/auth-options';
-
-import { FormUser } from '../_components/form-user';
 import { User } from '@/interfaces/user';
 import { Role } from '@/interfaces/role';
 
-async function getUser(userId: string, accessToken: string): Promise<User> {
-	const resp = await fetch(`${process.env.API_URL}/user/${userId}`, {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
+import { FormUser } from '../_components/form-user';
 
-	const data = await resp.json();
-
-	return data.user;
+interface UserIdPageProps {
+	params: {
+		userId: string;
+	};
 }
 
-async function getRoles(accessToken: string): Promise<Role[]> {
-	const resp = await fetch(`${process.env.API_URL}/role`, {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
-
+async function getUser(id: string): Promise<User> {
+	const resp = await fetch(`${process.env.API_URL}/user/${id}`, { cache: 'no-cache' });
 	const data = await resp.json();
-
-	return data.roles;
+	return data;
 }
 
-async function Page({ params }: { params: { userId: string } }) {
-	const session = await getServerSession(options);
+async function getRoles(): Promise<Role[]> {
+	const resp = await fetch(`${process.env.API_URL}/rol`, { cache: 'no-cache' });
+	const data = await resp.json();
+	return data;
+}
 
-	const user = await getUser(params.userId, session!.accessToken);
-	const roles = await getRoles(session!.accessToken);
+async function Page({ params }: UserIdPageProps) {
+	const [user, roles] = await Promise.all([getUser(params.userId), getRoles()]);
 
 	return <FormUser initialData={user} roles={roles} />;
 }

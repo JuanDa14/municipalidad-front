@@ -1,8 +1,8 @@
-import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth-options';
 
-import { options } from '@/lib/auth-options';
 import {
 	Card,
 	CardContent,
@@ -11,12 +11,15 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import { SignInForm } from './_components/form-sign-in';
+
+import { FormLogin } from './_components/form-login';
 
 const Page = async () => {
-	const session = await getServerSession(options);
+	const session = await getServerSession(authOptions);
 
-	session?.user && redirect('/dashboard');
+	if (session?.user) {
+		redirect('/dashboard');
+	}
 
 	return (
 		<div className='w-full min-h-screen flex items-center justify-center px-5 md:px-0'>
@@ -24,11 +27,11 @@ const Page = async () => {
 				<CardHeader className='flex flex-col space-y-2 text-center'>
 					<CardTitle className='text-2xl font-semibold'>Municipalidad de San José</CardTitle>
 					<CardDescription className='text-sm text-muted-foreground'>
-						Inicia sesión con tu correo electrónico y contraseña.
+						Ingresa con tu correo electrónico y contraseña.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<SignInForm />
+					<FormLogin />
 				</CardContent>
 				<CardFooter>
 					<p className='text-center text-sm text-muted-foreground'>

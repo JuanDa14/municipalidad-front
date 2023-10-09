@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { MobileNavbar } from '@/components/mobile-navbar';
-import { SettingsUserButton } from '@/components/settings-user-button';
+import { UserButton } from '@/components/user-button';
 import { cn } from '@/lib/utils';
 
 export const Navbar = () => {
@@ -22,14 +22,14 @@ export const Navbar = () => {
 						src='/next.svg'
 						priority
 						alt='Logo'
-						width={40}
-						height={40}
+						width={150}
+						height={150}
 						className='cursor-pointer'
 					/>
 				</Link>
 			</div>
 			<div className='flex items-center gap-x-3 justify-end'>
-				<SettingsUserButton />
+				<UserButton />
 			</div>
 		</div>
 	);

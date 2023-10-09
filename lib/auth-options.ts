@@ -1,38 +1,22 @@
 import { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
+import { User } from '@/interfaces/user';
+
 declare module 'next-auth' {
 	interface Session {
-		accessToken: string;
-		refreshToken: string;
-		user: {
-			_id: string;
-			name: string;
-			role: { _id: string; name: string };
-			email: string;
-			imageURL: string;
-			state: boolean;
-		};
+		user: User;
 	}
 }
 
 declare module 'next-auth/jwt' {
 	interface JWT {
-		accessToken: string;
-		refreshToken: string;
-		user: {
-			_id: string;
-			name: string;
-			role: { _id: string; name: string };
-			email: string;
-			imageURL: string;
-			state: boolean;
-		};
+		user: User;
 	}
 }
 
-export const options: NextAuthOptions = {
-	session: { strategy: 'jwt', maxAge: 60 * 60 },
+export const authOptions: NextAuthOptions = {
+	session: { strategy: 'jwt' },
 	providers: [
 		CredentialsProvider({
 			id: 'credentials',
@@ -71,16 +55,6 @@ export const options: NextAuthOptions = {
 	callbacks: {
 		jwt: async ({ token, user, trigger, session }) => {
 			if (trigger === 'update' && session) {
-				if (session.accessToken && session.refreshToken) {
-					return {
-						...token,
-						accessToken: session.accessToken,
-						refreshToken: session.refreshToken,
-						user: {
-							...session.user,
-						},
-					};
-				}
 				return {
 					...token,
 					user: {
@@ -99,18 +73,17 @@ export const options: NextAuthOptions = {
 		},
 		session: async ({ session, token }) => {
 			session.user = {
-				_id: token.user._id as string,
-				name: token.user.name as string,
+				_id: token.user._id,
+				name: token.user.name,
 				role: {
-					_id: token.user.role._id as string,
-					name: token.user.role.name as string,
+					_id: token.user.role._id,
+					name: token.user.role.name,
 				},
-				email: token.user.email as string,
-				imageURL: token.user.imageURL as string,
-				state: token.user.state as boolean,
+				email: token.user.email,
+				imageURL: token.user.imageURL,
+				state: token.user.state,
+				address: token.user.address,
 			};
-			session.accessToken = token.accessToken as string;
-			session.refreshToken = token.refreshToken as string;
 
 			return session;
 		},

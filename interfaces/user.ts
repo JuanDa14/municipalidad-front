@@ -1,4 +1,4 @@
-import { Role } from './role';
+import { Role } from '@/interfaces/role';
 
 export interface User {
 	_id: string;
@@ -7,4 +7,6 @@ export interface User {
 	email: string;
 	imageURL: string;
 	state: boolean;
+	address: string;
+	password?: string;
 }

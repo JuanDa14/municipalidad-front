@@ -1,29 +1,22 @@
-import { getServerSession } from 'next-auth';
-import { options } from '@/lib/auth-options';
-import { Provider } from '@/interfaces/provider';
 import { FormProvider } from '../_components/form-provider';
+import { Provider } from '@/interfaces/provider';
 
-async function getProvider(accessToken: string, providerId: string): Promise<Provider> {
-	const resp = await fetch(`${process.env.API_URL}/provider/${providerId}`, {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
-
-	const data = await resp.json();
-
-	return data.provider;
+interface ProviderIdPageProps {
+	params: {
+		providerId: string;
+	};
 }
 
-const ProviderIdPage = async ({ params }: { params: { providerId: string } }) => {
-	const session = await getServerSession(options);
-	const provider = await getProvider(session!.accessToken, params.providerId);
+async function getProvider(id: string): Promise<Provider> {
+	const resp = await fetch(`${process.env.API_URL}/provider/${id}`, { cache: 'no-cache' });
+	const data = await resp.json();
+	return data;
+}
 
-	return (
-		<div>
-			<FormProvider initialData={provider} />
-		</div>
-	);
+const ProviderIdPage = async ({ params }: ProviderIdPageProps) => {
+	const provider = await getProvider(params.providerId);
+
+	return <FormProvider initialData={provider} />;
 };
 
 export default ProviderIdPage;

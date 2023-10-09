@@ -6,6 +6,9 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Trash } from 'lucide-react';
+import { toast } from 'react-hot-toast';
+import axios from 'axios';
+import { axiosUrl } from '@/lib/axios';
 
 import {
 	Form,
@@ -25,12 +28,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { Icons } from '@/components/icons';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
-import { useFetch } from '@/hooks/useFetch';
 import { Client } from '@/interfaces/client';
 import { InputSearch } from '@/components/input-search';
-import { toast } from '@/components/ui/use-toast';
+import { ButtonLoading } from '@/components/button-loading';
 
 const createClientSchema = z.object({
 	name: z.string({ required_error: 'El nombre es requerido' }).min(3, {
@@ -44,10 +45,11 @@ const createClientSchema = z.object({
 		.max(9, {
 			message: 'El teléfono debe tener máximo 9 caracteres.',
 		}),
-	direction: z.string({ required_error: 'La direccion es obligatoria' }).max(200, {
+	address: z.string({ required_error: 'La direccion es obligatoria' }).max(200, {
 		message: 'La dirección debe tener máximo 100 caracteres.',
 	}),
 	document_type: z.enum(['DNI', 'RUC']),
+	state: z.enum(['Activo', 'Inactivo']),
 	dni_ruc: z.string({ required_error: 'El DNI/RUC es requerido' }),
 	email: z.string({ required_error: 'El email es requerido' }).email({
 		message: 'El email debe ser válido',
@@ -61,19 +63,19 @@ interface FormClientProps {
 export const FormClient = ({ initialData }: FormClientProps) => {
 	const router = useRouter();
 
-	const { fetchWithToken, fetchLoading } = useFetch();
-
 	const [IsLoadingSearch, setIsLoadingSearch] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
 
 	const form = useForm<z.infer<typeof createClientSchema>>({
 		resolver: zodResolver(createClientSchema),
-		defaultValues: initialData || {
+		defaultValues: { ...initialData, state: initialData?.state ? 'Activo' : 'Inactivo' } || {
 			name: '',
 			phone: '',
 			direction: '',
 			dni_ruc: '',
-			document_type: 'DNI',
 			email: '',
+			document_type: 'DNI',
+			state: 'Activo',
 		},
 	});
 
@@ -81,37 +83,26 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 
 	const onSearch = async () => {
 		const ruc = form.getValues('dni_ruc');
-		const document = form.getValues('document_type');
-		const documentType = document === 'DNI' ? 'dni' : 'ruc';
+		const document = form.getValues('document_type').toLowerCase();
 
 		if (ruc.length === 0 || document.length === 0) return;
 
 		try {
 			setIsLoadingSearch(true);
 
-			const resp = await fetch(
-				`${process.env.NEXT_PUBLIC_RENIEC_API}?tipo=${documentType}&numero=${ruc}`
+			const { data } = await axios.get(
+				`${process.env.NEXT_PUBLIC_RENIEC_API}?tipo=${document}&numero=${ruc}`
 			);
 
-			const data = await resp.json();
-
-			if (data.error) {
-				return toast({
-					title: 'Error',
-					description: data.error,
-					variant: 'destructive',
-				});
+			if (!data.error) {
+				form.setValue('name', data.nombre);
+				form.setValue('address', data.direccion);
+				form.setValue('phone', data.numero);
+				return;
 			}
-
-			form.setValue('name', data.nombre);
-			form.setValue('direction', data.direccion);
-			form.setValue('phone', data.numero);
+			toast.error('No se encontró el DNI/RUC');
 		} catch {
-			toast({
-				title: 'Error',
-				description: 'Ocurrio un error al obtener los datos.',
-				variant: 'destructive',
-			});
+			toast.error('No se encontró el DNI/RUC');
 		} finally {
 			setIsLoadingSearch(false);
 		}
@@ -119,30 +110,39 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 
 	const onSubmit = async (values: z.infer<typeof createClientSchema>) => {
 		if (initialData) {
-			await fetchWithToken(`/client/${initialData._id}`, {
-				method: 'PUT',
-				body: JSON.stringify(values),
-			});
+			try {
+				const valuesUpdated = { ...values, state: values.state === 'Activo' ? true : false };
+				await axiosUrl.patch(`/client/${initialData._id}`, valuesUpdated);
+				toast.success('Cliente actualizado correctamente');
+				router.refresh();
+				router.push('/clients');
+			} catch {
+				toast.error('Error al actualizar el cliente');
+			}
 		} else {
-			await fetchWithToken('/client', {
-				method: 'POST',
-				body: JSON.stringify(values),
-			});
+			try {
+				await axiosUrl.post('/client', values);
+				toast.success('Cliente creado correctamente');
+				router.refresh();
+				router.push('/clients');
+			} catch {
+				toast.error('Error al crear el cliente');
+			}
 		}
-		router.push('/clients');
-		router.refresh();
 	};
 
 	const onDelete = async () => {
-		if (!initialData) return;
-
-		await fetchWithToken(`/client/${initialData._id}`, {
-			method: 'PUT',
-			body: JSON.stringify({ state: !initialData.state }),
-		});
-
-		router.push('/clients');
-		router.refresh();
+		try {
+			setIsDeleting(true);
+			await axiosUrl.delete(`/client/${initialData?._id}`);
+			toast.success('Cliente eliminado correctamente');
+			router.refresh();
+			router.push('/clients');
+		} catch {
+			toast.error('Error al eliminar el cliente');
+		} finally {
+			setIsDeleting(false);
+		}
 	};
 
 	return (
@@ -162,15 +162,15 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 							<Button
 								type='button'
 								variant={'outline'}
-								disabled={fetchLoading}
+								disabled={isDeleting || isSubmitting}
 								onClick={() => router.back()}
 							>
 								<ArrowLeft className='h-4 w-4 mr-2' />
 								Atras
 							</Button>
 							{initialData && (
-								<ConfirmModal disabled={fetchLoading} onConfirm={onDelete}>
-									<Button disabled={fetchLoading}>
+								<ConfirmModal disabled={isDeleting || isSubmitting} onConfirm={onDelete}>
+									<Button disabled={isDeleting || isSubmitting}>
 										<Trash className='h-4 w-4 mr-2' />
 										Eliminar
 									</Button>
@@ -212,9 +212,10 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 								</FormItem>
 							)}
 						/>
+
 						<FormField
-							control={form.control}
 							name='dni_ruc'
+							control={form.control}
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>DNI/RUC</FormLabel>
@@ -229,6 +230,7 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 								</FormItem>
 							)}
 						/>
+
 						<FormField
 							control={form.control}
 							name='name'
@@ -285,7 +287,7 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 
 						<FormField
 							control={form.control}
-							name='direction'
+							name='address'
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Direccion</FormLabel>
@@ -300,12 +302,45 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 								</FormItem>
 							)}
 						/>
+						<FormField
+							name='state'
+							control={form.control}
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Estado</FormLabel>
+									<Select
+										disabled={isSubmitting}
+										onValueChange={field.onChange}
+										value={field.value}
+										defaultValue={field.value}
+									>
+										<FormControl>
+											<SelectTrigger className='bg-background'>
+												<SelectValue
+													defaultValue={field.value}
+													placeholder='Seleccione un estado'
+												/>
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											{['Activo', 'Inactivo'].map((row) => (
+												<SelectItem value={row} key={row}>
+													{row}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 					</div>
 
-					<Button disabled={isSubmitting} type='submit' className='flex ml-auto'>
-						{isSubmitting && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
-						Guardar cliente
-					</Button>
+					<ButtonLoading
+						isSubmitting={isSubmitting || isDeleting}
+						label='Guardar'
+						type='submit'
+					/>
 				</form>
 			</Form>
 		</div>

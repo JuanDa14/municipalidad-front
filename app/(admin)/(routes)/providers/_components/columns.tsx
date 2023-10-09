@@ -42,9 +42,9 @@ export const columns: ColumnDef<Provider>[] = [
 	},
 
 	{
-		accessorKey: 'direction',
+		accessorKey: 'address',
 		header: 'Dirección',
-		cell: ({ row }) => <span className='text-xs capitalize'>{row.original.direction}</span>,
+		cell: ({ row }) => <span className='text-xs capitalize'>{row.original.address}</span>,
 	},
 	{
 		accessorKey: 'condition',
@@ -86,7 +86,7 @@ export const columns: ColumnDef<Provider>[] = [
 		cell: ({ row }) => (
 			<div className='flex items-center justify-center gap-x-2'>
 				<Link href={`/providers/${row.original._id}`}>
-					<Button disabled={!row.original.state} size={'icon'} type='button'>
+					<Button size={'icon'} type='button'>
 						<Pencil className='w-4 h-4' />
 					</Button>
 				</Link>

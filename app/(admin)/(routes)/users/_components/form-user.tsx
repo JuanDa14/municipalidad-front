@@ -1,13 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Trash } from 'lucide-react';
-
-import { useFetch } from '@/hooks/useFetch';
+import { toast } from 'react-hot-toast';
+import { axiosUrl } from '@/lib/axios';
 import { User } from '@/interfaces/user';
 import { Role } from '@/interfaces/role';
 
@@ -30,8 +29,9 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { ImageUpload } from '@/components/image-upload';
-import { Icons } from '@/components/icons';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
+import { useState } from 'react';
+import { ButtonLoading } from '@/components/button-loading';
 
 const createUserSchema = z.object({
 	name: z.string({ required_error: 'El nombre es requerido' }).min(3, {
@@ -47,6 +47,10 @@ const createUserSchema = z.object({
 	role: z
 		.string({ required_error: 'El rol es requerido' })
 		.min(1, { message: 'El rol es requerido.' }),
+	address: z
+		.string({ required_error: 'La dirección es requerida' })
+		.min(3, { message: 'La dirección debe tener al menos 3 caracteres.' }),
+	state: z.enum(['Activo', 'Inactivo']),
 });
 
 const updateUserSchema = createUserSchema.omit({ password: true }).extend({
@@ -60,19 +64,24 @@ interface FormUserProps {
 
 export const FormUser = ({ initialData, roles }: FormUserProps) => {
 	const router = useRouter();
-
-	const rolesIds = roles.map((rol) => rol._id);
-
-	const { fetchWithToken, fetchLoading } = useFetch();
+	const [isDeleting, setIsDeleting] = useState(false);
+	const roleIds = roles.map((rol) => rol._id);
 
 	const form = useForm<z.infer<typeof createUserSchema>>({
 		resolver: zodResolver(initialData ? updateUserSchema : createUserSchema),
-		defaultValues: { ...initialData, password: '', role: initialData?.role._id } || {
+		defaultValues: {
+			...initialData,
+			password: '',
+			role: initialData?.role._id,
+			state: initialData?.state ? 'Activo' : 'Inactivo',
+		} || {
 			name: '',
 			email: '',
 			password: '',
-			role: rolesIds[0],
+			role: roleIds[0],
 			imageURL: '',
+			address: '',
+			state: 'Activo',
 		},
 	});
 
@@ -80,30 +89,39 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 
 	const onSubmit = async (values: z.infer<typeof createUserSchema>) => {
 		if (initialData) {
-			await fetchWithToken(`/user/${initialData._id}`, {
-				method: 'PUT',
-				body: JSON.stringify(values),
-			});
+			try {
+				const valuesUpdated = { ...values, state: values.state === 'Activo' ? true : false };
+				await axiosUrl.patch(`/user/${initialData._id}`, valuesUpdated);
+				toast.success('Usuario actualizado correctamente');
+				router.refresh();
+				router.push('/users');
+			} catch {
+				toast.error('Error al actualizar el usuario');
+			}
 		} else {
-			await fetchWithToken('/user', {
-				method: 'POST',
-				body: JSON.stringify(values),
-			});
+			try {
+				await axiosUrl.post('/user', values);
+				toast.success('Usuario creado correctamente');
+				router.refresh();
+				router.push('/users');
+			} catch {
+				toast.error('Error al crear el usuario');
+			}
 		}
-
-		router.push('/users');
-		router.refresh();
 	};
 
 	const onDelete = async () => {
-		if (!initialData) return;
-
-		await fetchWithToken(`/user/state/${initialData._id}`, {
-			method: 'PUT',
-		});
-
-		router.push('/users');
-		router.refresh();
+		try {
+			setIsDeleting(true);
+			await axiosUrl.delete(`/user/${initialData?._id}`);
+			toast.success('Usuario eliminado correctamente');
+			router.refresh();
+			router.push('/users');
+		} catch {
+			toast.error('Error al eliminar el usuario');
+		} finally {
+			setIsDeleting(false);
+		}
 	};
 
 	return (
@@ -124,7 +142,7 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 						<div className='flex gap-x-2 items-center'>
 							<Button
 								type='button'
-								disabled={fetchLoading}
+								disabled={isDeleting || isSubmitting}
 								variant={'outline'}
 								onClick={() => router.back()}
 							>
@@ -132,8 +150,8 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 								Atras
 							</Button>
 							{initialData && (
-								<ConfirmModal disabled={fetchLoading} onConfirm={onDelete}>
-									<Button disabled={fetchLoading}>
+								<ConfirmModal disabled={isDeleting || isSubmitting} onConfirm={onDelete}>
+									<Button disabled={isDeleting || isSubmitting}>
 										<Trash className='h-4 w-4 mr-2' />
 										Eliminar
 									</Button>
@@ -163,13 +181,9 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 							name='name'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Nombre Completo</FormLabel>
+									<FormLabel>Nombre</FormLabel>
 									<FormControl>
-										<Input
-											disabled={isSubmitting}
-											placeholder='Ingrese el nombre completo'
-											{...field}
-										/>
+										<Input disabled={isSubmitting} placeholder='nombre...' {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -182,11 +196,7 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 								<FormItem>
 									<FormLabel>Correo electrónico</FormLabel>
 									<FormControl>
-										<Input
-											disabled={isSubmitting}
-											placeholder='Ingrese el correo electrónico'
-											{...field}
-										/>
+										<Input disabled={isSubmitting} placeholder='correo...' {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -202,7 +212,7 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 										<Input
 											disabled={isSubmitting}
 											type='password'
-											placeholder='Ingrese la contraseña'
+											placeholder='contraseña...'
 											{...field}
 										/>
 									</FormControl>
@@ -231,7 +241,7 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
-											{rolesIds.map((rolId) => (
+											{roleIds.map((rolId) => (
 												<SelectItem value={rolId} key={rolId}>
 													{roles.map(
 														({ name, _id }) =>
@@ -248,12 +258,62 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 								</FormItem>
 							)}
 						/>
+						<FormField
+							control={form.control}
+							name='address'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Contraseña</FormLabel>
+									<FormControl>
+										<Input
+											disabled={isSubmitting}
+											placeholder='direccion...'
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							name='state'
+							control={form.control}
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Estado</FormLabel>
+									<Select
+										disabled={isSubmitting}
+										onValueChange={field.onChange}
+										value={field.value}
+										defaultValue={field.value}
+									>
+										<FormControl>
+											<SelectTrigger className='bg-background'>
+												<SelectValue
+													defaultValue={field.value}
+													placeholder='Seleccione un estado'
+												/>
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											{['Activo', 'Inactivo'].map((row) => (
+												<SelectItem value={row} key={row}>
+													{row}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 					</div>
 
-					<Button disabled={isSubmitting} type='submit'>
-						{isSubmitting && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
-						Guardar usuario
-					</Button>
+					<ButtonLoading
+						isSubmitting={isSubmitting || isDeleting}
+						label='Guardar usuario'
+						type='submit'
+					/>
 				</form>
 			</Form>
 		</div>

@@ -32,7 +32,7 @@ interface DataTableProps {
 	columns: ColumnDef<Role>[];
 }
 
-export function DataTable({ data, columns }: DataTableProps) {
+export function DataTable({ data = [], columns = [] }: DataTableProps) {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [sorting, setSorting] = useState<SortingState>([]);
 

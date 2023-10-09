@@ -1,30 +1,22 @@
-import { getServerSession } from 'next-auth';
 import { FormRol } from '../_components/form-rol';
-import { options } from '@/lib/auth-options';
 import { Role } from '@/interfaces/role';
 
-async function getRole(id: string, accessToken: string): Promise<Role> {
-	const resp = await fetch(`${process.env.API_URL}/role/${id}`, {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
-
-	const data = await resp.json();
-
-	return data.role;
+interface RoleIdPageProps {
+	params: {
+		roleId: string;
+	};
 }
 
-const RoleIdPage = async ({ params }: { params: { roleId: string } }) => {
-	const session = await getServerSession(options);
+async function getRole(id: string): Promise<Role> {
+	const resp = await fetch(`${process.env.API_URL}/rol/${id}`, { cache: 'no-cache' });
+	const data = await resp.json();
+	return data;
+}
 
-	const rol = await getRole(params.roleId, session!.accessToken);
+const RoleIdPage = async ({ params }: RoleIdPageProps) => {
+	const rol = await getRole(params.roleId);
 
-	return (
-		<div>
-			<FormRol initialData={rol} />
-		</div>
-	);
+	return <FormRol initialData={rol} />;
 };
 
 export default RoleIdPage;

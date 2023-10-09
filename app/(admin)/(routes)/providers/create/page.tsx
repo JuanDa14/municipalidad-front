@@ -1,11 +1,7 @@
 import { FormProvider } from '../_components/form-provider';
 
 const CreateProviderPage = () => {
-	return (
-		<div>
-			<FormProvider />
-		</div>
-	);
+	return <FormProvider />;
 };
 
 export default CreateProviderPage;

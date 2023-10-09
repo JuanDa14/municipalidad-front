@@ -1,27 +1,22 @@
-import { getServerSession } from 'next-auth';
-
-import { options } from '@/lib/auth-options';
 import { Client } from '@/interfaces/client';
-
 import { FormClient } from '../_components/form-client';
 
-async function getClient(accessToken: string, clientId: string): Promise<Client> {
-	const resp = await fetch(`${process.env.API_URL}/client/${clientId}`, {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
-
-	const data = await resp.json();
-
-	return data.client;
+interface ClientIdPageProps {
+	params: {
+		clientId: string;
+	};
 }
 
-const Page = async ({ params }: { params: { clientId: string } }) => {
-	const session = await getServerSession(options);
-	const client = await getClient(session!.accessToken, params.clientId);
+async function getClient(id: string): Promise<Client> {
+	const resp = await fetch(`${process.env.API_URL}/client/${id}`, { cache: 'no-cache' });
+	const data = await resp.json();
+	return data;
+}
+
+const ClientIdPage = async ({ params }: ClientIdPageProps) => {
+	const client = await getClient(params.clientId);
 
 	return <FormClient initialData={client} />;
 };
 
-export default Page;
+export default ClientIdPage;

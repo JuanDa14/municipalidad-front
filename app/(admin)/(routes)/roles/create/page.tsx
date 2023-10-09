@@ -1,11 +1,7 @@
 import { FormRol } from '../_components/form-rol';
 
 const CreateRolPage = () => {
-	return (
-		<div>
-			<FormRol />
-		</div>
-	);
+	return <FormRol />;
 };
 
 export default CreateRolPage;

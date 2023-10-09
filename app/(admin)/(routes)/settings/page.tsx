@@ -1,11 +1,11 @@
 import { getServerSession } from 'next-auth';
-import { options } from '@/lib/auth-options';
-
+import { authOptions } from '@/lib/auth-options';
 import { Separator } from '@/components/ui/separator';
+
 import { SettingsForm } from './_components/settings-form';
 
 const SettingsPage = async () => {
-	const session = await getServerSession(options);
+	const session = await getServerSession(authOptions);
 
 	return (
 		<div className='p-6'>

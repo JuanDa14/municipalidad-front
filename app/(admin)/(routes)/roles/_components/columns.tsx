@@ -51,13 +51,7 @@ export const columns: ColumnDef<Role>[] = [
 		header: 'Acciones',
 		cell: ({ row }) => (
 			<Link href={`/roles/${row.original._id}`}>
-				<Button
-					disabled={!row.getValue('state')}
-					title='Editar rol'
-					size={'icon'}
-					type='button'
-					onClick={() => {}}
-				>
+				<Button size={'icon'} type='button'>
 					<Pencil className='w-4 h-4' />
 				</Button>
 			</Link>

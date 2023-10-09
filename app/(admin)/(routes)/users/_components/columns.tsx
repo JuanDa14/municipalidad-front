@@ -58,6 +58,20 @@ export const columns: ColumnDef<User>[] = [
 		},
 	},
 	{
+		accessorKey: 'address',
+		header: ({ column }) => {
+			return (
+				<Button
+					variant='ghost'
+					onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				>
+					Dirección
+					<ArrowUpDown className='ml-2 h-4 w-4' />
+				</Button>
+			);
+		},
+	},
+	{
 		accessorKey: 'state',
 		header: ({ column }) => {
 			return (
@@ -103,12 +117,7 @@ export const columns: ColumnDef<User>[] = [
 			return (
 				<div className='flex items-center justify-center gap-x-2'>
 					<Link href={`/users/${_id}`}>
-						<Button
-							disabled={!row.original.state}
-							title='Editar usuario'
-							size={'icon'}
-							type='button'
-						>
+						<Button size={'icon'} type='button'>
 							<Pencil className='w-4 h-4' />
 						</Button>
 					</Link>

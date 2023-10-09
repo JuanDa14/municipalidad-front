@@ -5,7 +5,7 @@ export interface Client {
 	name: string;
 	email: string;
 	phone: string;
-	direction: string;
+	address: string;
 	document_type: DocumentType;
 	dni_ruc: string;
 	state: boolean;

@@ -1,10 +1,12 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useSession } from 'next-auth/react';
-
+import { axiosUrl } from '@/lib/axios';
 import {
 	Form,
 	FormControl,
@@ -14,55 +16,55 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { ImageUpload } from '@/components/image-upload';
-import { Icons } from '@/components/icons';
 import { User } from '@/interfaces/user';
-import { useFetch } from '@/hooks/useFetch';
-import { useRouter } from 'next/navigation';
+import { ButtonLoading } from '@/components/button-loading';
 
 const SettingsFormSchema = z.object({
-	name: z.string().min(3, {
+	name: z.string({ required_error: 'El nombre es requerido' }).min(3, {
 		message: 'El nombre debe tener al menos 3 caracteres.',
 	}),
-	email: z.string().email({
+	email: z.string({ required_error: 'El correo es requerido' }).email({
 		message: 'Por favor, ingrese un correo electrónico válido.',
 	}),
-	password: z
-		.string()
-		.min(3, {
-			message: 'La contraseña debe tener al menos 8 caracteres.',
-		})
+	password: z.string().optional(),
+	imageURL: z
+		.string({ required_error: 'La imagen es requerida' })
+		.min(1, { message: 'La imagen es requerida.' }),
+	address: z
+		.string({ required_error: 'La dirección es requerida.' })
+		.min(3, { message: 'La dirección debe tener al menos 3 caracteres.' })
 		.optional(),
-	imageURL: z.string().min(1, { message: 'La imagen es requerida.' }),
 });
 
 type SettingsFormValues = z.infer<typeof SettingsFormSchema>;
 
 export function SettingsForm({ user }: { user: User }) {
-	const { fetchWithToken } = useFetch();
-
 	const router = useRouter();
-
-	const { data: session, update } = useSession();
+	const { update } = useSession();
 
 	const form = useForm<SettingsFormValues>({
 		resolver: zodResolver(SettingsFormSchema),
-		defaultValues: { ...user },
+		defaultValues: {
+			address: user.address,
+			email: user.email,
+			imageURL: user.imageURL,
+			name: user.name,
+			password: '',
+		},
 	});
 
 	const { isSubmitting } = form.formState;
 
 	async function onSubmit(values: SettingsFormValues) {
-		const data = await fetchWithToken(`/user/profile/${session?.user._id}`, {
-			method: 'PUT',
-			body: JSON.stringify({ ...values, role: user.role._id }),
-		});
-
-		if (data.ok) {
-			await update({ user: data.user });
-			router.push('/dashboard');
+		try {
+			const { data } = await axiosUrl.patch<User>(`/user/${user._id}`, values);
+			await update({ user: data });
 			router.refresh();
+			router.push('/dashboard');
+			toast.success('Perfil actualizado correctamente');
+		} catch {
+			toast.error('Error al actualizar el perfil');
 		}
 	}
 
@@ -90,13 +92,9 @@ export function SettingsForm({ user }: { user: User }) {
 						name='name'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Nombre Completo</FormLabel>
+								<FormLabel>Nombre</FormLabel>
 								<FormControl>
-									<Input
-										disabled={isSubmitting}
-										placeholder='Ingrese el nombre completo'
-										{...field}
-									/>
+									<Input disabled={isSubmitting} placeholder='nombre...' {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -111,7 +109,7 @@ export function SettingsForm({ user }: { user: User }) {
 								<FormControl>
 									<Input
 										disabled={isSubmitting}
-										placeholder='Ingrese el correo electrónico'
+										placeholder='correo electrónico...'
 										{...field}
 									/>
 								</FormControl>
@@ -129,7 +127,7 @@ export function SettingsForm({ user }: { user: User }) {
 									<Input
 										disabled={isSubmitting}
 										type='password'
-										placeholder='Ingrese la contraseña'
+										placeholder='contraseña...'
 										{...field}
 									/>
 								</FormControl>
@@ -137,11 +135,21 @@ export function SettingsForm({ user }: { user: User }) {
 							</FormItem>
 						)}
 					/>
+					<FormField
+						control={form.control}
+						name='address'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Dirección</FormLabel>
+								<FormControl>
+									<Input disabled={isSubmitting} placeholder='direccion...' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 				</div>
-				<Button disabled={isSubmitting} type='submit' className='flex ml-auto'>
-					{isSubmitting && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
-					Actualizar perfil
-				</Button>
+				<ButtonLoading isSubmitting={isSubmitting} label='Actualizar' type='submit' />
 			</form>
 		</Form>
 	);

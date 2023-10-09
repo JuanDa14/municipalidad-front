@@ -46,9 +46,9 @@ export const columns: ColumnDef<Client>[] = [
 		cell: ({ row }) => <span className='text-xs capitalize'>{row.original.phone}</span>,
 	},
 	{
-		accessorKey: 'direction',
+		accessorKey: 'address',
 		header: 'Dirección',
-		cell: ({ row }) => <span className='text-xs capitalize'>{row.original.direction}</span>,
+		cell: ({ row }) => <span className='text-xs capitalize'>{row.original.address}</span>,
 	},
 	{
 		accessorKey: 'document_type',
@@ -95,12 +95,7 @@ export const columns: ColumnDef<Client>[] = [
 		cell: ({ row }) => (
 			<div className='flex items-center justify-center gap-x-2'>
 				<Link href={`/clients/${row.original._id}`}>
-					<Button
-						disabled={!row.original.state}
-						title='Editar cliente'
-						size={'icon'}
-						type='button'
-					>
+					<Button size={'icon'} type='button'>
 						<Pencil className='w-4 h-4' />
 					</Button>
 				</Link>
