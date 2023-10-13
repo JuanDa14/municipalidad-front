@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
-import { ButtonHTMLAttributes, HTMLAttributes } from 'react';
+import { ButtonHTMLAttributes } from 'react';
 
 interface ButtonLoadingProps {
 	isSubmitting: boolean;
