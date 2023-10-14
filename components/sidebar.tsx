@@ -12,65 +12,72 @@ import {
 	List,
 	Users2,
 	FolderCheck,
+	Receipt
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
 const routes = [
-	{
-		icon: Home,
-		href: '/dashboard',
-		label: 'Dashboard',
-		private: false,
-	},
-	{
-		icon: Users,
-		href: '/users',
-		label: 'Usuarios',
-		private: true,
-	},
-	{
-		icon: List,
-		href: '/roles',
-		label: 'Roles',
-		private: true,
-	},
-	{
-		icon: Folder,
-		href: '/reports',
-		label: 'Reportes',
-		private: true,
-	},
-	{
-		icon: Users,
-		href: '/clients',
-		label: 'Clientes',
-		private: true,
-	},
-	{
-		icon: FolderCheck,
-		href: '/services',
-		label: 'Servicios',
-		private: true,
-	},
-	{
-		icon: Users2,
-		href: '/providers',
-		label: 'Proveedores',
-		private: true,
-	},
-	{
-		icon: LibraryIcon,
-		href: '/charts',
-		label: 'Gráficas',
-		private: true,
-	},
-	{
-		icon: Settings,
-		href: '/settings',
-		label: 'Configuración',
-		private: false,
-	},
+  {
+    icon: Home,
+    href: "/dashboard",
+    label: "Dashboard",
+    private: false,
+  },
+  {
+    icon: Users,
+    href: "/users",
+    label: "Usuarios",
+    private: true,
+  },
+  {
+    icon: List,
+    href: "/roles",
+    label: "Roles",
+    private: true,
+  },
+  {
+    icon: Folder,
+    href: "/reports",
+    label: "Reportes",
+    private: true,
+  },
+  {
+    icon: Users,
+    href: "/clients",
+    label: "Clientes",
+    private: true,
+  },
+  {
+    icon: FolderCheck,
+    href: "/services",
+    label: "Servicios",
+    private: true,
+  },
+  {
+    icon: Receipt,
+    href: "/services",
+    label: "Recibos Mensuales",
+    private: true,
+  },
+  {
+    icon: Users2,
+    href: "/providers",
+    label: "Proveedores",
+    private: true,
+  },
+  {
+    icon: LibraryIcon,
+    href: "/charts",
+    label: "Gráficas",
+    private: true,
+  },
+  {
+    icon: Settings,
+    href: "/settings",
+    label: "Configuración",
+    private: false,
+  },
 ];
 
 export const Sidebar = () => {
