@@ -62,7 +62,6 @@ interface FormClientProps {
 
 export const FormClient = ({ initialData }: FormClientProps) => {
 	const router = useRouter();
-
 	const [IsLoadingSearch, setIsLoadingSearch] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 
@@ -80,7 +79,7 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 	});
 
 	const { isSubmitting } = form.formState;
-
+	//buscar DNI/Ruc
 	const onSearch = async () => {
 		const ruc = form.getValues('dni_ruc');
 		const document = form.getValues('document_type').toLowerCase();
@@ -322,9 +321,10 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 												/>
 											</SelectTrigger>
 										</FormControl>
+
 										<SelectContent>
 											{['Activo', 'Inactivo'].map((row) => (
-												<SelectItem value={row} key={row}>
+												<SelectItem  value={row} key={row}>
 													{row}
 												</SelectItem>
 											))}
