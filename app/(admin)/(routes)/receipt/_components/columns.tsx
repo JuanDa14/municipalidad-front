@@ -54,7 +54,7 @@ export const columns: ColumnDef<ServiceReceipt>[] = [
     header: "Acciones",
     cell: ({ row }) => (
       <div className="flex items-center justify-center gap-x-2">
-        <Link href={`#`}>
+        <Link href={`/receipt/print/${row.original._id}`}>
           <Button size={"icon"} type="button">
             <Printer className="w-4 h-4 " />
           </Button>

@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Trash, Search,CalendarClock } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { axiosUrl } from "@/lib/axios";
+import { axios } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import es from "date-fns/locale/es";
 import {
@@ -31,7 +31,6 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Icons } from "@/components/icons";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
-import { Role } from "@/interfaces/role";
 import {
   Select,
   SelectContent,
@@ -55,14 +54,14 @@ const createServiceReceiptSchema = z.object({
   service: z.string(),
   name: z.string({ required_error: "El dni es necesario" }),
   months: z.string({
-    required_error: "La cantidad de meses es obligatorio"}),
+    required_error: "La cantidad de meses es obligatorio",
+  }),
   fromDate: z.date({
     required_error: "La fecha de inicio de pago es necesaria.",
   }),
-  amount: z.number({
+  amount: z.string({
     required_error: "El precio es obligatorio",
-    invalid_type_error:"Debe ser un valor numerico"
-  }).int().positive(),
+  }),
   client: z.string(),
 });
 
@@ -80,7 +79,7 @@ export const FormReceipt = ({ initialData,services }: FormRolProps) => {
       return null
     }
 
-    const { data } = await axiosUrl.get(
+    const { data } = await axios.get(
       `http://localhost:4000/api/client/dni/${dni}`
     );
     if (data) {
@@ -94,23 +93,21 @@ export const FormReceipt = ({ initialData,services }: FormRolProps) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof createServiceReceiptSchema>>({
     resolver: zodResolver(createServiceReceiptSchema),
-    // defaultValues: initialData
-    //   ? {
-    //       dni_ruc: initialData.client.name,
-    //     }
-    //   : { dni_ruc: "", state: "Activo" },
+    defaultValues: {dni_ruc:''},
   });
 
   const { isSubmitting } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof createServiceReceiptSchema>) => {
+    console.log(values);
+    
     if (initialData) {
       try {
         const valuesUpdated = {
           ...values,
           // state: values.state === "Activo" ? true : false,
         };
-        await axiosUrl.patch(`/rol/${initialData._id}`, valuesUpdated);
+        await axios.patch(`/rol/${initialData._id}`, valuesUpdated);
         toast.success("Rol actualizado correctamente");
         router.refresh();
         router.push("/roles");
@@ -123,17 +120,15 @@ export const FormReceipt = ({ initialData,services }: FormRolProps) => {
         values.months = '0'
       }
       values.service = name[0]
-      values.amount= Number(values.amount)
       console.log(values);
-      
-      // try {
-      //   await axiosUrl.post("http://localhost:4000/api/service-receipt", values);
-      //   toast.success("Recibo registrado correctamente");
-      //   router.refresh();
-      //   router.push("/receipt");
-      // } catch {
-      //   toast.error("Error al crear el recibo");
-      // }
+      try {
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/service-receipt`, values);
+        toast.success("Recibo registrado correctamente");
+        router.refresh();
+        router.push("/receipt");
+      } catch {
+        toast.error("Error al crear el recibo");
+      }
     }
   };
 
