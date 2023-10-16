@@ -59,9 +59,10 @@ const createServiceReceiptSchema = z.object({
   fromDate: z.date({
     required_error: "La fecha de inicio de pago es necesaria.",
   }),
-  amount: z.string({
-    required_error: "El precio es obligatorio"
-  }),
+  amount: z.number({
+    required_error: "El precio es obligatorio",
+    invalid_type_error:"Debe ser un valor numerico"
+  }).int().positive(),
   client: z.string(),
 });
 
@@ -71,8 +72,6 @@ interface FormRolProps {
 }
 
 export const FormReceipt = ({ initialData,services }: FormRolProps) => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  let clientId = ""
 
   const ClientByDni = async () => {
     const dni = form.getValues("dni_ruc");
@@ -124,14 +123,17 @@ export const FormReceipt = ({ initialData,services }: FormRolProps) => {
         values.months = '0'
       }
       values.service = name[0]
-      try {
-        await axiosUrl.post("http://localhost:4000/api/service-receipt", values);
-        toast.success("Recibo registrado correctamente");
-        router.refresh();
-        router.push("/receipt");
-      } catch {
-        toast.error("Error al crear el recibo");
-      }
+      values.amount= Number(values.amount)
+      console.log(values);
+      
+      // try {
+      //   await axiosUrl.post("http://localhost:4000/api/service-receipt", values);
+      //   toast.success("Recibo registrado correctamente");
+      //   router.refresh();
+      //   router.push("/receipt");
+      // } catch {
+      //   toast.error("Error al crear el recibo");
+      // }
     }
   };
 
@@ -259,7 +261,6 @@ export const FormReceipt = ({ initialData,services }: FormRolProps) => {
                 </FormItem>
               )}
             />
-
             <FormField
               name="amount"
               control={form.control}
