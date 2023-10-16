@@ -88,9 +88,9 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 	const { isSubmitting } = form.formState;
 
 	const onSubmit = async (values: z.infer<typeof createUserSchema>) => {
+		const valuesUpdated = { ...values, state: values.state === 'Activo' ? true : false };
 		if (initialData) {
 			try {
-				const valuesUpdated = { ...values, state: values.state === 'Activo' ? true : false };
 				await axios.patch(`/user/${initialData._id}`, valuesUpdated);
 				toast.success('Usuario actualizado correctamente');
 				router.refresh();
@@ -100,7 +100,7 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 			}
 		} else {
 			try {
-				await axios.post('/user', values);
+				await axios.post('/user', valuesUpdated);
 				toast.success('Usuario creado correctamente');
 				router.refresh();
 				router.push('/users');
@@ -263,7 +263,7 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 							name='address'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Contraseña</FormLabel>
+									<FormLabel>Dirección</FormLabel>
 									<FormControl>
 										<Input
 											disabled={isSubmitting}
@@ -275,38 +275,40 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 								</FormItem>
 							)}
 						/>
-						<FormField
-							name='state'
-							control={form.control}
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Estado</FormLabel>
-									<Select
-										disabled={isSubmitting}
-										onValueChange={field.onChange}
-										value={field.value}
-										defaultValue={field.value}
-									>
-										<FormControl>
-											<SelectTrigger className='bg-background'>
-												<SelectValue
-													defaultValue={field.value}
-													placeholder='Seleccione un estado'
-												/>
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent>
-											{['Activo', 'Inactivo'].map((row) => (
-												<SelectItem value={row} key={row}>
-													{row}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+						{initialData && (
+							<FormField
+								name='state'
+								control={form.control}
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Estado</FormLabel>
+										<Select
+											disabled={isSubmitting}
+											onValueChange={field.onChange}
+											value={field.value}
+											defaultValue={field.value}
+										>
+											<FormControl>
+												<SelectTrigger className='bg-background'>
+													<SelectValue
+														defaultValue={field.value}
+														placeholder='Seleccione un estado'
+													/>
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												{['Activo', 'Inactivo'].map((row) => (
+													<SelectItem value={row} key={row}>
+														{row}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						)}
 					</div>
 
 					<ButtonLoading

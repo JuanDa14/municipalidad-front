@@ -126,7 +126,7 @@ export const FormRol = ({ initialData }: FormRolProps) => {
 						</div>
 					</div>
 					<Separator className='bg-primary/10' />
-					<div className='grid grid-cols-1 md:grid-cols-2 gap-x-4'>
+					<div className='grid grid-cols-1 gap-x-4'>
 						<FormField
 							control={form.control}
 							name='name'
@@ -144,38 +144,40 @@ export const FormRol = ({ initialData }: FormRolProps) => {
 								</FormItem>
 							)}
 						/>
-						<FormField
-							name='state'
-							control={form.control}
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Estado</FormLabel>
-									<Select
-										disabled={isSubmitting}
-										onValueChange={field.onChange}
-										value={field.value}
-										defaultValue={field.value}
-									>
-										<FormControl>
-											<SelectTrigger className='bg-background'>
-												<SelectValue
-													defaultValue={field.value}
-													placeholder='Seleccione un estado'
-												/>
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent>
-											{['Activo', 'Inactivo'].map((row) => (
-												<SelectItem value={row} key={row}>
-													{row}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+						{initialData && (
+							<FormField
+								name='state'
+								control={form.control}
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Estado</FormLabel>
+										<Select
+											disabled={isSubmitting}
+											onValueChange={field.onChange}
+											value={field.value}
+											defaultValue={field.value}
+										>
+											<FormControl>
+												<SelectTrigger className='bg-background'>
+													<SelectValue
+														defaultValue={field.value}
+														placeholder='Seleccione un estado'
+													/>
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												{['Activo', 'Inactivo'].map((row) => (
+													<SelectItem value={row} key={row}>
+														{row}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						)}
 					</div>
 
 					<Button className='flex ml-auto' disabled={isSubmitting} type='submit'>

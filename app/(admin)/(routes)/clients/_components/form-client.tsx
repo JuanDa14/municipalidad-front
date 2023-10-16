@@ -67,15 +67,17 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 
 	const form = useForm<z.infer<typeof createClientSchema>>({
 		resolver: zodResolver(createClientSchema),
-		defaultValues: { ...initialData, state: initialData?.state ? 'Activo' : 'Inactivo' } || {
-			name: '',
-			phone: '',
-			direction: '',
-			dni_ruc: '',
-			email: '',
-			document_type: 'DNI',
-			state: 'Activo',
-		},
+		defaultValues: initialData
+			? { ...initialData, state: initialData.state ? 'Activo' : 'Inactivo' }
+			: {
+					name: '',
+					phone: '',
+					address: '',
+					dni_ruc: '',
+					email: '',
+					document_type: 'DNI',
+					state: 'Activo',
+			  },
 	});
 
 	const { isSubmitting } = form.formState;
@@ -95,8 +97,6 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 
 			if (!data.error) {
 				form.setValue('name', data.nombre);
-				form.setValue('address', data.direccion);
-				form.setValue('phone', data.numero);
 				return;
 			}
 			toast.error('No se encontró el DNI/RUC');
@@ -301,39 +301,41 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 								</FormItem>
 							)}
 						/>
-						<FormField
-							name='state'
-							control={form.control}
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Estado</FormLabel>
-									<Select
-										disabled={isSubmitting}
-										onValueChange={field.onChange}
-										value={field.value}
-										defaultValue={field.value}
-									>
-										<FormControl>
-											<SelectTrigger className='bg-background'>
-												<SelectValue
-													defaultValue={field.value}
-													placeholder='Seleccione un estado'
-												/>
-											</SelectTrigger>
-										</FormControl>
 
-										<SelectContent>
-											{['Activo', 'Inactivo'].map((row) => (
-												<SelectItem  value={row} key={row}>
-													{row}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+						{initialData && (
+							<FormField
+								name='state'
+								control={form.control}
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Estado</FormLabel>
+										<Select
+											disabled={isSubmitting}
+											onValueChange={field.onChange}
+											value={field.value}
+											defaultValue={field.value}
+										>
+											<FormControl>
+												<SelectTrigger className='bg-background'>
+													<SelectValue
+														defaultValue={field.value}
+														placeholder='Seleccione un estado'
+													/>
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												{['Activo', 'Inactivo'].map((row) => (
+													<SelectItem value={row} key={row}>
+														{row}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						)}
 					</div>
 
 					<ButtonLoading
