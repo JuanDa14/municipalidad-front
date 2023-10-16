@@ -13,16 +13,10 @@ interface InputSearchProps {
 	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const InputSearch = ({
-	value,
-	onChange,
-	onClick,
-	isLoading,
-	...props
-}: InputSearchProps) => {
+export const InputSearch = ({ value, onChange, onClick, isLoading }: InputSearchProps) => {
 	return (
 		<div className='flex gap-x-1'>
-			<Input value={value} onChange={onChange} {...props} placeholder='Buscar.....' />
+			<Input value={value} onChange={onChange} placeholder='Buscar.....' />
 			<Button disabled={isLoading} type='button' size={'icon'} onClick={onClick}>
 				{isLoading ? (
 					<Loader2 className='animate-spin h-4 w-4' />

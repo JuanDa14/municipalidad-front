@@ -31,25 +31,26 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { ButtonLoading } from '@/components/button-loading';
+import { Provider } from '@/interfaces/provider';
 
 const createProviderSchema = z.object({
 	name: z.string({ required_error: 'El nombre es requerido' }).min(3, {
 		message: 'El nombre debe tener al menos 3 caracteres.',
 	}),
-	condition: z.enum(['HABIDO', 'NO HABIDO'], { required_error: 'La condicion es requerida' }),
-	state: z.enum(['ACTIVO', 'INACTIVO']),
+	dni_ruc: z.string({ required_error: 'El RUC es requerido' }),
 	address: z.string({ required_error: 'La direccion es obligatoria' }).max(200, {
 		message: 'La dirección debe tener máximo 100 caracteres.',
 	}),
-	dni_ruc: z.string({ required_error: 'El RUC es requerido' }),
+	condition: z.enum(['HABIDO', 'NO HABIDO'], { required_error: 'La condicion es requerida' }),
+	state: z.enum(['ACTIVO', 'INACTIVO']),
 	document_type: z.enum(['DNI', 'RUC'], { required_error: 'El tipo de documento es requerido' }),
 });
 
-interface FormClientProps {
-	initialData?: any;
+interface FormProviderProps {
+	initialData?: Provider;
 }
 
-export const FormProvider = ({ initialData }: FormClientProps) => {
+export const FormProvider = ({ initialData }: FormProviderProps) => {
 	const router = useRouter();
 
 	const [IsLoadingSearch, setIsLoadingSearch] = useState(false);
@@ -63,7 +64,7 @@ export const FormProvider = ({ initialData }: FormClientProps) => {
 					name: '',
 					dni_ruc: '',
 					address: '',
-					document_type: 'RUC',
+					document_type: 'DNI',
 					state: 'ACTIVO',
 					condition: 'HABIDO',
 			  },

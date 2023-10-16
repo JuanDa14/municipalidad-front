@@ -56,7 +56,7 @@ const routes = [
   },
   {
     icon: Receipt,
-    href: "/receipt",
+    href: "/receipts",
     label: "Recibos Mensuales",
     private: true,
   },
