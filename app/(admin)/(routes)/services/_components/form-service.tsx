@@ -171,45 +171,13 @@ export const FormService = ({ initialData, serviceTypes }: FormServiceProps) => 
 								</FormItem>
 							)}
 						/>
-						<FormField
-							name='state'
-							control={form.control}
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Estado</FormLabel>
-									<Select
-										disabled={isSubmitting}
-										onValueChange={field.onChange}
-										value={field.value}
-										defaultValue={field.value}
-									>
-										<FormControl>
-											<SelectTrigger className='bg-background'>
-												<SelectValue
-													defaultValue={field.value}
-													placeholder='Seleccione un estado'
-												/>
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent>
-											{['Activo', 'Inactivo'].map((row) => (
-												<SelectItem value={row} key={row}>
-													{row}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
 
 						<FormField
 							name='type'
 							control={form.control}
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Estado</FormLabel>
+									<FormLabel>Tipo de servicio</FormLabel>
 									<Select
 										disabled={isSubmitting}
 										onValueChange={field.onChange}
@@ -236,6 +204,41 @@ export const FormService = ({ initialData, serviceTypes }: FormServiceProps) => 
 								</FormItem>
 							)}
 						/>
+
+						{initialData && (
+							<FormField
+								name='state'
+								control={form.control}
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Estado</FormLabel>
+										<Select
+											disabled={isSubmitting}
+											onValueChange={field.onChange}
+											value={field.value}
+											defaultValue={field.value}
+										>
+											<FormControl>
+												<SelectTrigger className='bg-background'>
+													<SelectValue
+														defaultValue={field.value}
+														placeholder='Seleccione un estado'
+													/>
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												{['Activo', 'Inactivo'].map((row) => (
+													<SelectItem value={row} key={row}>
+														{row}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						)}
 					</div>
 
 					<ButtonLoading

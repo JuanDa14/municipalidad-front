@@ -109,7 +109,7 @@ export function DataTable<User, TValue>({ columns, data }: DataTableProps) {
 						))}
 					</TableHeader>
 					<TableBody>
-						{table.getRowModel().rows?.length ? (
+						{table.getRowModel().rows?.length > 1 ? (
 							table
 								.getRowModel()
 								.rows.filter((row) => row.original!._id !== session?.user._id)
