@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Trash } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { axiosUrl } from '@/lib/axios';
+import { axios } from '@/lib/axios';
 import { User } from '@/interfaces/user';
 import { Role } from '@/interfaces/role';
 
@@ -91,7 +91,7 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 		if (initialData) {
 			try {
 				const valuesUpdated = { ...values, state: values.state === 'Activo' ? true : false };
-				await axiosUrl.patch(`/user/${initialData._id}`, valuesUpdated);
+				await axios.patch(`/user/${initialData._id}`, valuesUpdated);
 				toast.success('Usuario actualizado correctamente');
 				router.refresh();
 				router.push('/users');
@@ -100,7 +100,7 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 			}
 		} else {
 			try {
-				await axiosUrl.post('/user', values);
+				await axios.post('/user', values);
 				toast.success('Usuario creado correctamente');
 				router.refresh();
 				router.push('/users');
@@ -113,7 +113,7 @@ export const FormUser = ({ initialData, roles }: FormUserProps) => {
 	const onDelete = async () => {
 		try {
 			setIsDeleting(true);
-			await axiosUrl.delete(`/user/${initialData?._id}`);
+			await axios.delete(`/user/${initialData?._id}`);
 			toast.success('Usuario eliminado correctamente');
 			router.refresh();
 			router.push('/users');

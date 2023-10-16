@@ -1,5 +1,5 @@
-import { Navbar } from '@/components/navbar';
-import { Sidebar } from '@/components/sidebar';
+import { Navbar } from '@/app/(admin)/_components/navbar';
+import { Sidebar } from '@/app/(admin)/_components/sidebar';
 
 interface AdminLayoutProps {
 	children: React.ReactNode;

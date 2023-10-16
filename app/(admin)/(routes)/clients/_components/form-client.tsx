@@ -7,8 +7,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Trash } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
-import { axiosUrl } from '@/lib/axios';
+import Axios from 'axios';
+import { axios } from '@/lib/axios';
 
 import {
 	Form,
@@ -89,7 +89,7 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 		try {
 			setIsLoadingSearch(true);
 
-			const { data } = await axios.get(
+			const { data } = await Axios.get(
 				`${process.env.NEXT_PUBLIC_RENIEC_API}?tipo=${document}&numero=${ruc}`
 			);
 
@@ -111,7 +111,7 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 		if (initialData) {
 			try {
 				const valuesUpdated = { ...values, state: values.state === 'Activo' ? true : false };
-				await axiosUrl.patch(`/client/${initialData._id}`, valuesUpdated);
+				await axios.patch(`/client/${initialData._id}`, valuesUpdated);
 				toast.success('Cliente actualizado correctamente');
 				router.refresh();
 				router.push('/clients');
@@ -120,7 +120,7 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 			}
 		} else {
 			try {
-				await axiosUrl.post('/client', values);
+				await axios.post('/client', values);
 				toast.success('Cliente creado correctamente');
 				router.refresh();
 				router.push('/clients');
@@ -133,7 +133,7 @@ export const FormClient = ({ initialData }: FormClientProps) => {
 	const onDelete = async () => {
 		try {
 			setIsDeleting(true);
-			await axiosUrl.delete(`/client/${initialData?._id}`);
+			await axios.delete(`/client/${initialData?._id}`);
 			toast.success('Cliente eliminado correctamente');
 			router.refresh();
 			router.push('/clients');

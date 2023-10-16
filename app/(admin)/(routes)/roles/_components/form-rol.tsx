@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Trash } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { axiosUrl } from '@/lib/axios';
+import { axios } from '@/lib/axios';
 import {
 	Form,
 	FormControl,
@@ -59,7 +59,7 @@ export const FormRol = ({ initialData }: FormRolProps) => {
 		if (initialData) {
 			try {
 				const valuesUpdated = { ...values, state: values.state === 'Activo' ? true : false };
-				await axiosUrl.patch(`/rol/${initialData._id}`, valuesUpdated);
+				await axios.patch(`/rol/${initialData._id}`, valuesUpdated);
 				toast.success('Rol actualizado correctamente');
 				router.refresh();
 				router.push('/roles');
@@ -68,7 +68,7 @@ export const FormRol = ({ initialData }: FormRolProps) => {
 			}
 		} else {
 			try {
-				await axiosUrl.post('/rol/', values);
+				await axios.post('/rol/', values);
 				toast.success('Rol creado correctamente');
 				router.refresh();
 				router.push('/roles');
@@ -81,7 +81,7 @@ export const FormRol = ({ initialData }: FormRolProps) => {
 	const onDelete = async () => {
 		try {
 			setIsDeleting(true);
-			await axiosUrl.delete(`/rol/${initialData?._id}`);
+			await axios.delete(`/rol/${initialData?._id}`);
 			toast.success('Rol eliminado correctamente');
 			router.refresh();
 			router.push('/roles');

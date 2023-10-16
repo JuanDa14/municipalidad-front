@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useSession } from 'next-auth/react';
-import { axiosUrl } from '@/lib/axios';
+import { axios } from '@/lib/axios';
 import {
 	Form,
 	FormControl,
@@ -58,7 +58,7 @@ export function SettingsForm({ user }: { user: User }) {
 
 	async function onSubmit(values: SettingsFormValues) {
 		try {
-			const { data } = await axiosUrl.patch<User>(`/user/${user._id}`, values);
+			const { data } = await axios.patch<User>(`/user/${user._id}`, values);
 			await update({ user: data });
 			router.refresh();
 			router.push('/dashboard');

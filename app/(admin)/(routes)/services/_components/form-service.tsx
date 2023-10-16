@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Trash } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { axiosUrl } from '@/lib/axios';
+import { axios } from '@/lib/axios';
 import { Service } from '@/interfaces/service';
 
 import {
@@ -70,7 +70,7 @@ export const FormService = ({ initialData, serviceTypes }: FormServiceProps) => 
 		if (initialData) {
 			try {
 				const valuesUpdated = { ...values, state: values.state === 'Activo' ? true : false };
-				await axiosUrl.patch(`/service/${initialData._id}`, valuesUpdated);
+				await axios.patch(`/service/${initialData._id}`, valuesUpdated);
 				toast.success('Servicio actualizado correctamente');
 				router.refresh();
 				router.push('/services');
@@ -79,7 +79,7 @@ export const FormService = ({ initialData, serviceTypes }: FormServiceProps) => 
 			}
 		} else {
 			try {
-				await axiosUrl.post('/service', values);
+				await axios.post('/service', values);
 				toast.success('Servicio creado correctamente');
 				router.refresh();
 				router.push('/services');
@@ -92,7 +92,7 @@ export const FormService = ({ initialData, serviceTypes }: FormServiceProps) => 
 	const onDelete = async () => {
 		try {
 			setIsDeleting(true);
-			await axiosUrl.delete(`/service/${initialData?._id}`);
+			await axios.delete(`/service/${initialData?._id}`);
 			toast.success('Servicio eliminado correctamente');
 			router.refresh();
 			router.push('/services');
