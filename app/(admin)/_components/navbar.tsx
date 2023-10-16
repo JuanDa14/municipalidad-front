@@ -4,14 +4,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { MobileNavbar } from '@/components/mobile-navbar';
-import { UserButton } from '@/components/user-button';
+import { UserButton } from '@/app/(admin)/_components/user-button';
 import { cn } from '@/lib/utils';
+import { Sidebar } from './sidebar';
 
 export const Navbar = () => {
 	return (
 		<div className='fixed top-0 w-full bg-primary-foreground z-50 flex items-center justify-between py-2 px-4 border-b border-primary/10 h-16'>
 			<div className='flex items-center justify-start'>
-				<MobileNavbar />
+				<MobileNavbar className='p-0 pt-10 w-56'>
+					<Sidebar />
+				</MobileNavbar>
 				<Link
 					href={'/dashboard'}
 					className={cn(

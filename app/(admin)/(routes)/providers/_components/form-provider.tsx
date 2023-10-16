@@ -7,8 +7,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Trash } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
-import { axiosUrl } from '@/lib/axios';
+import Axios from 'axios';
+import { axios } from '@/lib/axios';
 import {
 	Form,
 	FormControl,
@@ -80,7 +80,7 @@ export const FormProvider = ({ initialData }: FormClientProps) => {
 		try {
 			setIsLoadingSearch(true);
 
-			const { data } = await axios.get(
+			const { data } = await Axios.get(
 				`${process.env.NEXT_PUBLIC_RENIEC_API}?tipo=${document}&numero=${ruc}`
 			);
 
@@ -104,7 +104,7 @@ export const FormProvider = ({ initialData }: FormClientProps) => {
 
 		if (initialData) {
 			try {
-				await axiosUrl.patch(`/provider/${initialData._id}`, valuesUpdated);
+				await axios.patch(`/provider/${initialData._id}`, valuesUpdated);
 				toast.success('Proveedor actualizado correctamente');
 				router.refresh();
 				router.push('/providers');
@@ -113,7 +113,7 @@ export const FormProvider = ({ initialData }: FormClientProps) => {
 			}
 		} else {
 			try {
-				await axiosUrl.post('/provider', valuesUpdated);
+				await axios.post('/provider', valuesUpdated);
 				toast.success('Proveedor creado correctamente');
 				router.refresh();
 				router.push('/providers');
@@ -126,7 +126,7 @@ export const FormProvider = ({ initialData }: FormClientProps) => {
 	const onDelete = async () => {
 		try {
 			setIsDeleting(true);
-			await axiosUrl.delete(`/provider/${initialData?._id}`);
+			await axios.delete(`/provider/${initialData?._id}`);
 			toast.success('Proveedor eliminado correctamente');
 			router.refresh();
 			router.push('/providers');
