@@ -19,8 +19,8 @@ const PrintComponent = ({ receipt }: ReceiptData) => {
     <div className="h-screen">
       <PDFViewer width={"100%"} height={"100%"}>
         <Document>
-          <Page size={"A5"} orientation="landscape">
-            <View style={{ padding: 50 }}>
+          <Page size={"A6"} orientation="landscape">
+            <View style={{ padding: 50,fontSize:10 }}>
               <View
                 style={{
                   flexDirection: "row",
