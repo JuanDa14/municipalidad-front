@@ -101,12 +101,12 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 		try {
 			setIsLoadingSearch(true);
 
-			const { data } = await Axios.get(
-				`${process.env.NEXT_PUBLIC_RENIEC_API}?tipo=${document}&numero=${ruc}`
+			const { data } = await axios.get(
+				`/client/dni/${ruc}`
 			);
 
-			if (!data.error) {
-				form.setValue('name', data.nombre);
+			if (data) {
+				form.setValue('name', data.name);
 				return;
 			}
 			toast.error('No se encontró el DNI/RUC');
@@ -129,11 +129,11 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 			}
 		} else {
 			const serviceFound = services.find((service) => service._id === values.service)!;
-			const isMonthly = serviceFound.type.description.toUpperCase() === 'MENSUAL';
+			const isMonthly = serviceFound.type.description.toUpperCase() !== 'MENSUAL';
 			const valuesUpdate = { ...values, months: isMonthly ? '0' : values.months };
 
 			try {
-				await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/service-receipt`, valuesUpdate);
+				await axios.post(`/service-receipt`, valuesUpdate);
 				toast.success('Recibo registrado correctamente');
 				router.refresh();
 				router.push('/receipts');
