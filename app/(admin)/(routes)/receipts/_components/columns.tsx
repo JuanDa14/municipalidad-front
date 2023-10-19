@@ -26,10 +26,10 @@ export const columns: ColumnDef<ServiceReceipt>[] = [
   },
   {
     accessorKey: "date",
-    header: "Meses pagados",
+    header: "Fecha de pago",
     cell: ({ row }) => (
       <span className="text-xs capitalize">
-        {row.original.fromDate} - {row.original.toDate}
+        {row.original.paymentDate}
       </span>
     ),
   },

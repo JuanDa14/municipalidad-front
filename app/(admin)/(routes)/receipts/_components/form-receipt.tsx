@@ -36,27 +36,29 @@ import { InputSearch } from '@/components/input-search';
 import { DatePicker } from '@/components/date-picker';
 
 const createServiceReceiptSchema = z.object({
-	document_type: z.enum(['DNI', 'RUC'], { required_error: 'El tipo de documento es requerido' }),
-	dni_ruc: z
-		.string({ required_error: 'El dni ruc es requerido' })
-		.min(8, {
-			message: 'El nombre debe tener al menos 8 caracteres.',
-		})
-		.max(11, {
-			message: 'El dni_ruc debe tener un máximo de 11 carácteres',
-		}),
-	service: z.string(),
-	name: z.string({ required_error: 'El dni es necesario' }),
-	months: z.string({
-		required_error: 'La cantidad de meses es obligatorio',
-	}),
-	fromDate: z.date({
-		required_error: 'La fecha de inicio de pago es necesaria.',
-	}),
-	amount: z.string({
-		required_error: 'El precio es obligatorio',
-	}),
-	client: z.string(),
+  document_type: z.enum(["DNI", "RUC"], {
+    required_error: "El tipo de documento es requerido",
+  }),
+  dni_ruc: z
+    .string({ required_error: "El dni ruc es requerido" })
+    .min(8, {
+      message: "El nombre debe tener al menos 8 caracteres.",
+    })
+    .max(11, {
+      message: "El dni_ruc debe tener un máximo de 11 carácteres",
+    }),
+  service: z.string(),
+  name: z.string({ required_error: "El dni es necesario" }),
+  months: z.string({
+    required_error: "La cantidad de meses es obligatorio",
+  }),
+  paymentDate: z.date({
+    required_error: "La fecha de inicio de pago es necesaria.",
+  }),
+  amount: z.string({
+    required_error: "El precio es obligatorio",
+  }),
+  client: z.string(),
 });
 
 interface FormReceiptProps {
@@ -69,26 +71,26 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 
 	const router = useRouter();
 	const form = useForm<z.infer<typeof createServiceReceiptSchema>>({
-		resolver: zodResolver(createServiceReceiptSchema),
-		defaultValues: initialData
-			? {
-					...initialData,
-					service: initialData.service._id,
-					fromDate: new Date(initialData.fromDate),
-					client: initialData.client._id,
-					document_type: 'DNI',
-			  }
-			: {
-					document_type: 'DNI',
-					dni_ruc: '',
-					service: services[0]._id,
-					name: '',
-					months: '',
-					fromDate: new Date(),
-					amount: '',
-					client: '',
-			  },
-	});
+    resolver: zodResolver(createServiceReceiptSchema),
+    defaultValues: initialData
+      ? {
+          ...initialData,
+          service: initialData.service._id,
+          paymentDate: new Date(initialData.paymentDate),
+          client: initialData.client._id,
+          document_type: "DNI",
+        }
+      : {
+          document_type: "DNI",
+          dni_ruc: "",
+          service: services[0]._id,
+          name: "",
+          months: "",
+          paymentDate: new Date(),
+          amount: "",
+          client: "",
+        },
+  });
 
 	const { isSubmitting } = form.formState;
 
@@ -144,151 +146,161 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 	};
 
 	return (
-		<div className='h-full w-full p-6 space-y-2  mx-auto'>
-			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-					<div className='flex items-center justify-between space-y-2'>
-						<div className='flex justify-between'>
-							<div className='text-lg font-medium'>
-								<h3>Formulario</h3>
-								<p className='text-sm text-muted-foreground'>
-									Complete todos los datos correctamente.
-								</p>
-							</div>
-						</div>
-						<div className='flex gap-x-2 items-center'>
-							<Button type='button' variant={'outline'} onClick={() => router.back()}>
-								<ArrowLeft className='h-4 w-4 mr-2' />
-								Atras
-							</Button>
-						</div>
-					</div>
-					<Separator className='bg-primary/10' />
-					<div className='grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5'>
-						<FormField
-							control={form.control}
-							name='dni_ruc'
-							render={({ field }) => (
-								<FormItem className='w-full'>
-									<FormLabel>Dni del ciudadano</FormLabel>
-									<FormControl>
-										<InputSearch
-											value={field.value}
-											onChange={field.onChange}
-											isLoading={isLoadingSearch}
-											onClick={onSearch}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name='name'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Nombre del ciudadano</FormLabel>
-									<FormControl>
-										<Input disabled placeholder='Nombre del ciudadano' {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+    <div className="h-full w-full p-6 space-y-2  mx-auto">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="flex items-center justify-between space-y-2">
+            <div className="flex justify-between">
+              <div className="text-lg font-medium">
+                <h3>Formulario</h3>
+                <p className="text-sm text-muted-foreground">
+                  Complete todos los datos correctamente.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-x-2 items-center">
+              <Button
+                type="button"
+                variant={"outline"}
+                onClick={() => router.back()}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Atras
+              </Button>
+            </div>
+          </div>
+          <Separator className="bg-primary/10" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5">
+            <FormField
+              control={form.control}
+              name="dni_ruc"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Dni del ciudadano</FormLabel>
+                  <FormControl>
+                    <InputSearch
+                      value={field.value}
+                      onChange={field.onChange}
+                      isLoading={isLoadingSearch}
+                      onClick={onSearch}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre del ciudadano</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled
+                      placeholder="Nombre del ciudadano"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-						<FormField
-							name='service'
-							control={form.control}
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Servicios</FormLabel>
-									<Select
-										disabled={isSubmitting}
-										onValueChange={field.onChange}
-										value={field.value}
-										defaultValue={field.value}
-									>
-										<FormControl>
-											<SelectTrigger className='bg-background'>
-												<SelectValue
-													defaultValue={field.value}
-													placeholder='Seleccione...'
-												/>
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent>
-											{services.map((service) => (
-												<SelectItem value={service._id} key={service._id}>
-													{service.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							name='months'
-							control={form.control}
-							render={({ field }) => (
-								<FormItem className='w-full'>
-									<FormLabel>Meses del pago</FormLabel>
-									<FormControl>
-										<Input
-											type='number'
-											disabled={isSubmitting}
-											placeholder='Ingrese el numero de meses que se va a cancelar'
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							name='amount'
-							control={form.control}
-							render={({ field }) => (
-								<FormItem className='w-full'>
-									<FormLabel>Precio(S/.) unitario por servicio</FormLabel>
-									<FormControl>
-										<Input
-											type='number'
-											disabled={isSubmitting}
-											placeholder='Ingrese el numero de meses que se va a cancelar'
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							name='fromDate'
-							control={form.control}
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Fecha del mes a pagar</FormLabel>
-									<FormControl>
-										<DatePicker
-											isSubmitting={isSubmitting}
-											value={field.value}
-											onChange={field.onChange}
-										/>
-									</FormControl>
-								</FormItem>
-							)}
-						/>
-					</div>
+            <FormField
+              name="service"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Servicios</FormLabel>
+                  <Select
+                    disabled={isSubmitting}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="bg-background">
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Seleccione..."
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {services.map((service) => (
+                        <SelectItem value={service._id} key={service._id}>
+                          {service.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="months"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Meses del pago</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      disabled={isSubmitting}
+                      placeholder="Ingrese el numero de meses que se va a cancelar"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="amount"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Precio(S/.) unitario por servicio</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      disabled={isSubmitting}
+                      placeholder="Ingrese el numero de meses que se va a cancelar"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="paymentDate"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fecha del mes a pagar</FormLabel>
+                  <FormControl>
+                    <DatePicker
+                      isSubmitting={isSubmitting}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
 
-					<Button className='flex ml-auto' type='submit'>
-						{isSubmitting && <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />}
-						Guardar
-					</Button>
-				</form>
-			</Form>
-		</div>
-	);
+          <Button className="flex ml-auto" type="submit">
+            {isSubmitting && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Guardar
+          </Button>
+        </form>
+      </Form>
+    </div>
+  );
 };
