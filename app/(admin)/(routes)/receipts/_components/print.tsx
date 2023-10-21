@@ -13,7 +13,7 @@ import { ServiceReceiptDetail } from "@/interfaces/service-receipt-detail";
 import { formatoWithZeros } from "@/lib/utils";
 import format from "date-fns/format";
 import es from "date-fns/locale/es";
-import { NumerosALetras } from "@/lib/numbersToWordsEs";
+import { NumerosALetras } from "@/lib/numbers-to-words-es";
 
 interface responseDetail {
   receipt: ServiceReceipt;
