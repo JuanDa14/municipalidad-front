@@ -23,8 +23,6 @@ async function getReceipt(id: string): Promise<responseDetail> {
   );
 
   const data = await resp.json();
-  console.log(data);
-  
   return data;
 }
 

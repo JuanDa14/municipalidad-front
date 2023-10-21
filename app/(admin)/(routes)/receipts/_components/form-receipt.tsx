@@ -103,10 +103,11 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 
     try {
       setIsLoadingSearch(true);
-
       const { data } = await axios.get(`/client/dni/${ruc}`);
 
       if (data) {
+        toast.success("Ciudadano encontrado");
+        form.setValue("client",data._id)
         form.setValue("name", data.name);
         return;
       }
@@ -131,7 +132,7 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
         toast.error("Error al actualizar el recibo");
       }
     } else {
-      values.paymentDate = values.date.toLocaleDateString("es");
+      values.paymentDate = String(values.date);
       const serviceFound = services.find(
         (service) => service._id === values.service
       )!;
@@ -142,8 +143,6 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
         months: isMonthly ? "0" : values.months,
       };
 	  console.log(valuesUpdate);
-	  
-
       try {
         await axios.post(`/service-receipt`, valuesUpdate);
         toast.success("Recibo registrado correctamente");

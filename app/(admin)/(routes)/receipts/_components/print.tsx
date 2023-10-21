@@ -11,6 +11,9 @@ import {
 } from "@react-pdf/renderer";
 import { ServiceReceiptDetail } from "@/interfaces/service-receipt-detail";
 import { formatoWithZeros } from "@/lib/utils";
+import format from "date-fns/format";
+import es from "date-fns/locale/es";
+import { NumerosALetras } from "@/lib/numbersToWordsEs";
 
 interface responseDetail {
   receipt: ServiceReceipt;
@@ -18,14 +21,18 @@ interface responseDetail {
 }
 
 const PrintComponent = ({ receipt, detail }: responseDetail) => {
-  console.log(detail);
-  
   return (
     <div className="h-screen">
       <PDFViewer width={"100%"} height={"100%"}>
         <Document>
           <Page size={"A6"} orientation="landscape">
-            <View style={{ padding: 20, fontSize: 10 }}>
+            <View
+              style={{
+                paddingVertical: 20,
+                fontSize: 10,
+                paddingHorizontal: 30,
+              }}
+            >
               <View
                 style={{
                   flexDirection: "row",
@@ -70,6 +77,8 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
                       color: "#ffffff",
                       padding: 5,
                       alignItems: "center",
+                      borderRadius:3,
+                      marginTop:5
                     }}
                   >
                     <Text>RECIBO DE INGRESOS</Text>
@@ -77,6 +86,7 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
                   </View>
                 </View>
               </View>
+
               <View
                 style={{ paddingTop: 10, fontSize: 8, flexDirection: "row" }}
               >
@@ -88,34 +98,82 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
                   <Text>Fecha: {receipt.paymentDate}</Text>
                 </View>
               </View>
-              <View style={{ paddingTop: 10 }}>
-                <View >
+              <View
+                style={{
+                  marginTop: 10,
+                  border: 1,
+                  padding: 5,
+                  borderRadius: 5,
+                }}
+              >
+                <View style={{ flexDirection: "row", paddingBottom: 5 }}>
                   <View style={{ width: "70%" }}>
                     <Text>Servicio</Text>
                   </View>
-                  <View style={{ width: "30%" }}>
-                    <Text>Mes</Text>
-                    <Text>Año</Text>
+                  <View
+                    style={{
+                      width: "30%",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text style={{ marginLeft: 30 }}>Mes</Text>
+                    <Text style={{ marginLeft: 5 }}>Año</Text>
                     <Text>Total</Text>
                   </View>
                 </View>
-                {detail && detail.map((d, index) => {
-                  const date = new Date(d.paymentDate);
-                  const mes = date.getMonth();
-                  const year = date.getFullYear();
-                  return (
-                    <View key={index}>
-                      <View style={{ width: "70%" }}>
-                        <Text>{receipt.service.name}</Text>
-                      </View>
-                      <View style={{ width: "30%" }}>
-                        <Text>{d.paymentDate}</Text>
-                        <Text>{year}</Text>
-                        <Text>{d.amount}</Text>
-                      </View>
-                    </View>
-                  );
-                })}
+                <View style={{ fontSize: 9 }}>
+                  {detail &&
+                    detail.map((d, index) => {
+                      const date = new Date(d.paymentDate);
+                      const mes = format(date, "MMMM", { locale: es });
+                      const year = format(date, "yyyy");
+                      return (
+                        <View
+                          key={index}
+                          style={{ flexDirection: "row", paddingBottom: 2 }}
+                        >
+                          <View style={{ width: "70%" }}>
+                            <Text>{receipt.service.name}</Text>
+                          </View>
+                          <View
+                            style={{
+                              width: "30%",
+                              flexDirection: "row",
+                            }}
+                          >
+                            <View style={{ width: 60 }}>
+                              <Text style={{ textAlign: "right" }}>{mes}</Text>
+                            </View>
+                            <View style={{ width: 45 }}>
+                              <Text style={{ textAlign: "right" }}>{year}</Text>
+                            </View>
+                            <View style={{ width: 40 }}>
+                              <Text style={{ textAlign: "right" }}>
+                                {d.amount}
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                      );
+                    })}
+                </View>
+              </View>
+              {/* Esta es la parte de soles */}
+              <View
+                style={{
+                  marginTop: 10,
+                  border: 1,
+                  padding: 5,
+                  borderRadius: 5,
+                }}
+              >
+                <Text>Son: {NumerosALetras(Number(receipt.amount))}</Text>
+              </View>
+              <View style={{flexDirection:"row",justifyContent:"space-between", paddingHorizontal:10,paddingTop:20}}>
+                <View style={{flexDirection:"column",justifyContent:"center",width:80}}><Text>________________</Text> <Text style={{textAlign:"center"}}>Hecho por</Text></View>
+                <View style={{flexDirection:"column",justifyContent:"center",width:80}}><Text>________________</Text> <Text style={{textAlign:"center"}}>VºBº</Text></View>
+                <View style={{flexDirection:"column",justifyContent:"center",width:90}}><Text>________________</Text> <Text style={{textAlign:"center"}}>Recibí Conforme</Text></View>
               </View>
             </View>
           </Page>
