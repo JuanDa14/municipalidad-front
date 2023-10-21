@@ -49,14 +49,14 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
                 >
                   <View>
                     <Text>MUNICIPALIDAD CENTRO POBLADO</Text>
-                    <Text>"SAN MARTÍN DE PORRES"</Text>
+                    <Text>&ldquo;SAN MART&Iacute;N DE PORRES&ldquo;</Text>
                     <Text style={{ paddingVertical: -10 }}>
                       ______________________
                     </Text>
                   </View>
                   <View style={{ fontSize: 6, marginTop: -10 }}>
                     <Text>Calle: Puno S/N-Plaza de Armas</Text>
-                    <Text>DISTRITO SAN JOSÉ - PROV. DE PACASMAYO</Text>
+                    <Text>DISTRITO SAN JOS&Eacute; - PROV. DE PACASMAYO</Text>
                     <Text>R.U.C. 20226960172</Text>
                   </View>
                 </View>
@@ -77,8 +77,8 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
                       color: "#ffffff",
                       padding: 5,
                       alignItems: "center",
-                      borderRadius:3,
-                      marginTop:5
+                      borderRadius: 3,
+                      marginTop: 5,
                     }}
                   >
                     <Text>RECIBO DE INGRESOS</Text>
@@ -170,10 +170,44 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
               >
                 <Text>Son: {NumerosALetras(Number(receipt.amount))}</Text>
               </View>
-              <View style={{flexDirection:"row",justifyContent:"space-between", paddingHorizontal:10,paddingTop:20}}>
-                <View style={{flexDirection:"column",justifyContent:"center",width:80}}><Text>________________</Text> <Text style={{textAlign:"center"}}>Hecho por</Text></View>
-                <View style={{flexDirection:"column",justifyContent:"center",width:80}}><Text>________________</Text> <Text style={{textAlign:"center"}}>VºBº</Text></View>
-                <View style={{flexDirection:"column",justifyContent:"center",width:90}}><Text>________________</Text> <Text style={{textAlign:"center"}}>Recibí Conforme</Text></View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingHorizontal: 10,
+                  paddingTop: 20,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    width: 80,
+                  }}
+                >
+                  <Text>________________</Text>{" "}
+                  <Text style={{ textAlign: "center" }}>Hecho por</Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    width: 80,
+                  }}
+                >
+                  <Text>________________</Text>{" "}
+                  <Text style={{ textAlign: "center" }}>VºBº</Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    width: 90,
+                  }}
+                >
+                  <Text>________________</Text>{" "}
+                  <Text style={{ textAlign: "center" }}>Recibí Conforme</Text>
+                </View>
               </View>
             </View>
           </Page>
