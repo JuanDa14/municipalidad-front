@@ -1,10 +1,9 @@
 import { Client } from '@/interfaces/client';
 import { Service } from '@/interfaces/service';
 
-type DocumentType = 'DNI' | 'RUC';
-
 export interface ServiceReceipt {
 	_id: string;
+	autoIncrement:number
 	client: Client;
 	service: Service;
 	months: string;

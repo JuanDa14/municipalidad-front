@@ -18,6 +18,13 @@ export const columns: ColumnDef<ServiceReceipt>[] = [
     ),
   },
   {
+    accessorKey: "name",
+    header: "Nombre",
+    cell: ({ row }) => (
+      <span className="text-xs capitalize">{row.original.client.name}</span>
+    ),
+  },
+  {
     accessorKey: "service",
     header: "Servicio",
     cell: ({ row }) => (
@@ -28,18 +35,7 @@ export const columns: ColumnDef<ServiceReceipt>[] = [
     accessorKey: "date",
     header: "Fecha de pago",
     cell: ({ row }) => (
-      <span className="text-xs capitalize">
-        {row.original.paymentDate}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "servicetype",
-    header: "Tipo de Servicio",
-    cell: ({ row }) => (
-      <span className="text-xs capitalize">
-        {row.original.service.type.description}
-      </span>
+      <span className="text-xs capitalize">{row.original.paymentDate}</span>
     ),
   },
   {

@@ -1,39 +1,39 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import * as z from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft } from 'lucide-react';
-import { toast } from 'react-hot-toast';
-import { axios } from '@/lib/axios';
-import Axios from 'axios';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft } from "lucide-react";
+import { toast } from "react-hot-toast";
+import { axios } from "@/lib/axios";
+import Axios from "axios";
 import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from '@/components/ui/form';
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Icons } from '@/components/icons';
-import { ConfirmModal } from '@/components/modals/confirm-modal';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Icons } from "@/components/icons";
+import { ConfirmModal } from "@/components/modals/confirm-modal";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
-import { Service } from '@/interfaces/service';
-import { ServiceReceipt } from '@/interfaces/service-receipt';
-import { InputSearch } from '@/components/input-search';
-import { DatePicker } from '@/components/date-picker';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Service } from "@/interfaces/service";
+import { ServiceReceipt } from "@/interfaces/service-receipt";
+import { InputSearch } from "@/components/input-search";
+import { DatePicker } from "@/components/date-picker";
 
 const createServiceReceiptSchema = z.object({
   document_type: z.enum(["DNI", "RUC"], {
@@ -52,31 +52,32 @@ const createServiceReceiptSchema = z.object({
   months: z.string({
     required_error: "La cantidad de meses es obligatorio",
   }),
-  paymentDate: z.date({
+  date: z.date({
     required_error: "La fecha de inicio de pago es necesaria.",
   }),
   amount: z.string({
     required_error: "El precio es obligatorio",
   }),
   client: z.string(),
+  paymentDate: z.string().optional(),
 });
 
 interface FormReceiptProps {
-	initialData?: ServiceReceipt;
-	services: Service[];
+  initialData?: ServiceReceipt;
+  services: Service[];
 }
 
 export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
-	const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+  const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
-	const router = useRouter();
-	const form = useForm<z.infer<typeof createServiceReceiptSchema>>({
+  const router = useRouter();
+  const form = useForm<z.infer<typeof createServiceReceiptSchema>>({
     resolver: zodResolver(createServiceReceiptSchema),
     defaultValues: initialData
       ? {
           ...initialData,
           service: initialData.service._id,
-          paymentDate: new Date(initialData.paymentDate),
+          date: new Date(initialData.paymentDate),
           client: initialData.client._id,
           document_type: "DNI",
         }
@@ -86,66 +87,75 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
           service: services[0]._id,
           name: "",
           months: "",
-          paymentDate: new Date(),
+          date: new Date(),
           amount: "",
           client: "",
         },
   });
 
-	const { isSubmitting } = form.formState;
+  const { isSubmitting } = form.formState;
 
-	const onSearch = async () => {
-		const ruc = form.getValues('dni_ruc');
-		const document = form.getValues('document_type').toLowerCase();
+  const onSearch = async () => {
+    const ruc = form.getValues("dni_ruc");
+    const document = form.getValues("document_type").toLowerCase();
 
-		if (ruc.length === 0 || document.length === 0) return;
+    if (ruc.length === 0 || document.length === 0) return;
 
-		try {
-			setIsLoadingSearch(true);
+    try {
+      setIsLoadingSearch(true);
 
-			const { data } = await axios.get(
-				`/client/dni/${ruc}`
-			);
+      const { data } = await axios.get(`/client/dni/${ruc}`);
 
-			if (data) {
-				form.setValue('name', data.name);
-				return;
-			}
-			toast.error('No se encontró el DNI/RUC');
-		} catch {
-			toast.error('No se encontró el DNI/RUC');
-		} finally {
-			setIsLoadingSearch(false);
-		}
-	};
+      if (data) {
+        form.setValue("name", data.name);
+        return;
+      }
+      toast.error("No se encontró el DNI/RUC");
+    } catch {
+      toast.error("No se encontró el DNI/RUC");
+    } finally {
+      setIsLoadingSearch(false);
+    }
+  };
 
-	const onSubmit = async (values: z.infer<typeof createServiceReceiptSchema>) => {
-		if (initialData) {
-			try {
-				await axios.patch(`/service-receipt/${initialData._id}`, values);
-				toast.success('Recibo actualizado correctamente');
-				router.refresh();
-				router.push('/receipts');
-			} catch {
-				toast.error('Error al actualizar el recibo');
-			}
-		} else {
-			const serviceFound = services.find((service) => service._id === values.service)!;
-			const isMonthly = serviceFound.type.description.toUpperCase() !== 'MENSUAL';
-			const valuesUpdate = { ...values, months: isMonthly ? '0' : values.months };
+  const onSubmit = async (
+    values: z.infer<typeof createServiceReceiptSchema>
+  ) => {
+    if (initialData) {
+      try {
+        await axios.patch(`/service-receipt/${initialData._id}`, values);
+        toast.success("Recibo actualizado correctamente");
+        router.refresh();
+        router.push("/receipts");
+      } catch {
+        toast.error("Error al actualizar el recibo");
+      }
+    } else {
+      values.paymentDate = values.date.toLocaleDateString("es");
+      const serviceFound = services.find(
+        (service) => service._id === values.service
+      )!;
+      const isMonthly =
+        serviceFound.type.description.toUpperCase() !== "MENSUAL";
+      const valuesUpdate = {
+        ...values,
+        months: isMonthly ? "0" : values.months,
+      };
+	  console.log(valuesUpdate);
+	  
 
-			try {
-				await axios.post(`/service-receipt`, valuesUpdate);
-				toast.success('Recibo registrado correctamente');
-				router.refresh();
-				router.push('/receipts');
-			} catch {
-				toast.error('Error al crear el recibo');
-			}
-		}
-	};
+      try {
+        await axios.post(`/service-receipt`, valuesUpdate);
+        toast.success("Recibo registrado correctamente");
+        router.refresh();
+        router.push("/receipts");
+      } catch {
+        toast.error("Error al crear el recibo");
+      }
+    }
+  };
 
-	return (
+  return (
     <div className="h-full w-full p-6 space-y-2  mx-auto">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -276,7 +286,7 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
               )}
             />
             <FormField
-              name="paymentDate"
+              name="date"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
