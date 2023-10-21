@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpDown, Pencil, Printer } from "lucide-react";
+import { ArrowUpDown, Pencil, Printer,Eye } from "lucide-react";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
@@ -53,6 +53,11 @@ export const columns: ColumnDef<ServiceReceipt>[] = [
         <Link href={`/receipts/print/${row.original._id}`}>
           <Button size={"icon"} type="button">
             <Printer className="w-4 h-4 " />
+          </Button>
+        </Link>
+        <Link href={`/detail/${row.original._id}`}>
+          <Button size={"icon"} type="button">
+            <Eye className="w-4 h-4 " />
           </Button>
         </Link>
       </div>

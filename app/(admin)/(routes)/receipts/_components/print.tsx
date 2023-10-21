@@ -6,7 +6,7 @@ import {
   Text,
   View,
   Document,
-  StyleSheet,
+  Image,
   PDFViewer,
 } from "@react-pdf/renderer";
 import { ServiceReceiptDetail } from "@/interfaces/service-receipt-detail";
@@ -14,6 +14,7 @@ import { formatoWithZeros } from "@/lib/utils";
 import format from "date-fns/format";
 import es from "date-fns/locale/es";
 import { NumerosALetras } from "@/lib/numbers-to-words-es";
+import qrCode from "qrcode";
 
 interface responseDetail {
   receipt: ServiceReceipt;
@@ -21,6 +22,15 @@ interface responseDetail {
 }
 
 const PrintComponent = ({ receipt, detail }: responseDetail) => {
+  const generateQRCode = async (text: string): Promise<any> => {
+    try {
+      const qrImage = await qrCode.toDataURL(text);
+      return qrImage;
+    } catch (error) {
+      console.error("Error al generar el código QR:", error);
+      return null;
+    }
+  };
   return (
     <div className="h-screen">
       <PDFViewer width={"100%"} height={"100%"}>
@@ -122,7 +132,7 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
                     <Text>Total</Text>
                   </View>
                 </View>
-                <View style={{ fontSize: 9 }}>
+                <View style={{ fontSize: 7 }}>
                   {detail &&
                     detail.map((d, index) => {
                       const date = new Date(d.paymentDate);
@@ -168,14 +178,17 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
                   borderRadius: 5,
                 }}
               >
-                <Text>Son: {NumerosALetras(Number(receipt.amount))}</Text>
+                <Text style={{ fontSize: 8 }}>
+                  Son: {NumerosALetras(Number(receipt.amount))}
+                </Text>
               </View>
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
                   paddingHorizontal: 10,
-                  paddingTop: 20,
+                  paddingTop: 10,
+                  fontSize: 7,
                 }}
               >
                 <View
@@ -183,31 +196,51 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
                     flexDirection: "column",
                     justifyContent: "center",
                     width: 80,
+                    textAlign: "center",
                   }}
                 >
-                  <Text>________________</Text>{" "}
-                  <Text style={{ textAlign: "center" }}>Hecho por</Text>
+                  <Text>________________</Text> <Text>Hecho por</Text>
                 </View>
                 <View
                   style={{
                     flexDirection: "column",
                     justifyContent: "center",
                     width: 80,
+                    textAlign: "center",
                   }}
                 >
-                  <Text>________________</Text>{" "}
-                  <Text style={{ textAlign: "center" }}>VºBº</Text>
+                  <Text>________________</Text> <Text>VºBº</Text>
                 </View>
                 <View
                   style={{
                     flexDirection: "column",
                     justifyContent: "center",
                     width: 90,
+                    textAlign: "center",
                   }}
                 >
-                  <Text>________________</Text>{" "}
-                  <Text style={{ textAlign: "center" }}>Recibí Conforme</Text>
+                  <Text>________________</Text> <Text>Recibí Conforme</Text>
                 </View>
+              </View>
+              {/* aca el qr */}
+              <View
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  right: "50%",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignContent: "center",
+                  alignItems: "center",
+                  width: 80,
+                  bottom: -30, // Ajusta la posición horizontal según tus preferencias
+                  zIndex: -1, // Coloca el texto por debajo de otros elementos
+                }}
+              >
+                <Image
+                  src={generateQRCode(process.env.NEXT_PUBLIC_ULR + "/detail/" + receipt._id)}
+                  style={{ width: 40, height: 40 }}
+                />
               </View>
             </View>
           </Page>
