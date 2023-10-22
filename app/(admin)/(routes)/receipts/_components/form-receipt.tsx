@@ -125,7 +125,7 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 			putLasthMonth();
 		}
 		return setShow(true);
-	}, [selectedService]);
+	}, [selectedService, form, services]);
 
 	const { isSubmitting } = form.formState;
 

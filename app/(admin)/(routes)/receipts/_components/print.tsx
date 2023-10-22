@@ -1,7 +1,7 @@
 'use client';
 
 import { ServiceReceipt } from '@/interfaces/service-receipt';
-import { Page, Text, View, Document, Image, PDFViewer } from '@react-pdf/renderer';
+import { Page, Text, View, Document, Image as ImagePDF, PDFViewer } from '@react-pdf/renderer';
 import { ServiceReceiptDetail } from '@/interfaces/service-receipt-detail';
 import { formatoWithZeros } from '@/lib/utils';
 import format from 'date-fns/format';
@@ -265,7 +265,7 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
 									zIndex: -1, // Coloca el texto por debajo de otros elementos
 								}}
 							>
-								<Image
+								<ImagePDF
 									src={generateQRCode(
 										process.env.NEXT_PUBLIC_SITE_URL + '/detail/' + receipt._id
 									)}
