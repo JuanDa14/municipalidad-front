@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -60,6 +60,7 @@ const createServiceReceiptSchema = z.object({
   }),
   client: z.string(),
   paymentDate: z.string().optional(),
+  lastMonth: z.string().optional(),
 });
 
 interface FormReceiptProps {
@@ -69,6 +70,7 @@ interface FormReceiptProps {
 
 export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+  const [Show, setShow] = useState(true);
 
   const router = useRouter();
   const form = useForm<z.infer<typeof createServiceReceiptSchema>>({
@@ -92,26 +94,60 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
           client: "",
         },
   });
+  const selectedService = form.watch("service");
+
+  useEffect(() => {
+    const ser = form.getValues("service");
+    const serviceFound = services.find((service) => service._id === ser)!;
+    const isMonthly = serviceFound.type.description.toUpperCase() === "MENSUAL";
+
+    if (!isMonthly) {
+      return setShow(false);
+    }
+    return setShow(true);
+  }, [selectedService]);
 
   const { isSubmitting } = form.formState;
 
   const onSearch = async () => {
     const ruc = form.getValues("dni_ruc");
     const document = form.getValues("document_type").toLowerCase();
-
-    if (ruc.length === 0 || document.length === 0) return;
+    if (ruc.length === 0 || document.length === 0) {
+      toast.error("Ingrese bien los datos");
+      return;
+    }
 
     try {
       setIsLoadingSearch(true);
       const { data } = await axios.get(`/client/dni/${ruc}`);
-
       if (data) {
+        if (Show) {
+          const val = {
+            client: data._id,
+            service: form.getValues("service"),
+          };
+          const last = await axios.post(
+            `/service-receipt/findLastpayment`,
+            val
+          );
+          if (last) {
+            toast.success("Ciudadano encontrado");
+            form.setValue("client", data._id);
+            form.setValue("lastMonth", last.data.paymentDate);
+            form.setValue("name", data.name);
+            return;
+          }
+          toast.success("No hay meses Pagados");
+          form.setValue("client", data._id);
+          form.setValue("lastMonth", "Ninguno");
+          return;
+        }
         toast.success("Ciudadano encontrado");
-        form.setValue("client",data._id)
-        form.setValue("name", data.name);
+        form.setValue("client", data._id);
         return;
+      } else {
+        toast.error("No se encontró el DNI/RUC");
       }
-      toast.error("No se encontró el DNI/RUC");
     } catch {
       toast.error("No se encontró el DNI/RUC");
     } finally {
@@ -133,16 +169,11 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
       }
     } else {
       values.paymentDate = String(values.date);
-      const serviceFound = services.find(
-        (service) => service._id === values.service
-      )!;
-      const isMonthly =
-        serviceFound.type.description.toUpperCase() !== "MENSUAL";
       const valuesUpdate = {
         ...values,
-        months: isMonthly ? "0" : values.months,
+        months: Show ? "0" : values.months,
       };
-	  console.log(valuesUpdate);
+      console.log(valuesUpdate);
       try {
         await axios.post(`/service-receipt`, valuesUpdate);
         toast.success("Recibo registrado correctamente");
@@ -215,7 +246,25 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
                 </FormItem>
               )}
             />
-
+            {Show && (
+              <FormField
+                control={form.control}
+                name="lastMonth"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Último mes Pagado</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled
+                        placeholder="Último mes pagado"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               name="service"
               control={form.control}
@@ -248,24 +297,26 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
                 </FormItem>
               )}
             />
-            <FormField
-              name="months"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Meses del pago</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      disabled={isSubmitting}
-                      placeholder="Ingrese el numero de meses que se va a cancelar"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {Show && (
+              <FormField
+                name="months"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Meses del pago</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        disabled={isSubmitting}
+                        placeholder="Ingrese el numero de meses que se va a cancelar"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               name="amount"
               control={form.control}
@@ -284,22 +335,24 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
                 </FormItem>
               )}
             />
-            <FormField
-              name="date"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fecha del mes a pagar</FormLabel>
-                  <FormControl>
-                    <DatePicker
-                      isSubmitting={isSubmitting}
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            {Show && (
+              <FormField
+                name="date"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fecha del mes a pagar</FormLabel>
+                    <FormControl>
+                      <DatePicker
+                        isSubmitting={isSubmitting}
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
           <Button className="flex ml-auto" type="submit">
