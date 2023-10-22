@@ -16,7 +16,7 @@ const Detail = ({ receipt, details }: responseDetail) => {
       <div className="w-full text-center px-5 text-xl pb-10">
         MUNICIPALIDAD CENTRO POBLADO <br />
         <span className="text-black font-bold text-3xl">
-          "Centro Poblado San Martín de Porres"
+          &ldquo;Centro Poblado San Mart&iacuten; de Porres&ldquo;
         </span>
       </div>
       <div className="px-5">
@@ -56,7 +56,7 @@ const Detail = ({ receipt, details }: responseDetail) => {
             <span className="font-extrabold">Precio Total: </span> S/.
             {receipt.amount}
           </p>
-          {Number(receipt.amount) !== 0 && (
+          {Number(receipt.months) !== 0 && (
             <p>
               {" "}
               <span className="font-extrabold">Meses pagados: </span>{" "}
@@ -64,29 +64,31 @@ const Detail = ({ receipt, details }: responseDetail) => {
             </p>
           )}
         </div>
-        <table className="w-full mt-10 border-collapse" border={2}>
-          <thead>
-            <tr className="text-left">
-              <th className="border">Mes</th>
-              <th className="border text-right">Año</th>
-              <th className="border text-right">Precio Individual</th>
-            </tr>
-          </thead>
-          <tbody className="text-r">
-            {details.map((d) => {
-              const date = new Date(d.paymentDate);
-              const mes = format(date, "MMMM", { locale: es });
-              const year = format(date, "yyyy");
-              return (
-                <tr>
-                  <td className="border ">{mes}</td>
-                  <td className="border text-right">{year}</td>
-                  <td className="border text-right ">S/.{d.amount}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {Number(receipt.months) > 0 && (
+          <table className="w-full mt-10 border-collapse" border={2}>
+            <thead>
+              <tr className="text-left">
+                <th className="border">Mes</th>
+                <th className="border text-right">Año</th>
+                <th className="border text-right">Precio Individual</th>
+              </tr>
+            </thead>
+            <tbody className="text-r">
+              {details.map((d,index) => {
+                const date = new Date(d.paymentDate);
+                const mes = format(date, "MMMM", { locale: es });
+                const year = format(date, "yyyy");
+                return (
+                  <tr key={index}>
+                    <td className="border ">{mes}</td>
+                    <td className="border text-right">{year}</td>
+                    <td className="border text-right ">S/.{d.amount}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
 
         <p className="mt-10 text-xl font-extrabold text-center">
           Gracias por ser parte de nuestra comunidad!

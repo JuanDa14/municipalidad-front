@@ -92,9 +92,15 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
           date: new Date(),
           amount: "",
           client: "",
+          lastMonth: "",
         },
   });
   const selectedService = form.watch("service");
+
+
+  const getLastMonth = async (val: any) => {
+    return await axios.post(`/service-receipt/findLastpayment`, val);
+  };
 
   useEffect(() => {
     const ser = form.getValues("service");
@@ -103,6 +109,21 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 
     if (!isMonthly) {
       return setShow(false);
+    }
+    if (form.getValues("name") !== "") {
+      const val = {
+        client: form.getValues("client"),
+        service: form.getValues("service"),
+      };
+      const putLasthMonth =async () => {
+        const last = await getLastMonth(val)
+        if (last) {
+          form.setValue("lastMonth", last.data.paymentDate);
+        }else{
+          form.setValue("lastMonth", "Ninguno");
+        }
+      }
+      putLasthMonth()
     }
     return setShow(true);
   }, [selectedService]);
@@ -126,14 +147,12 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
             client: data._id,
             service: form.getValues("service"),
           };
-          const last = await axios.post(
-            `/service-receipt/findLastpayment`,
-            val
-          );
+          const last = getLastMonth(val);
+
           if (last) {
             toast.success("Ciudadano encontrado");
             form.setValue("client", data._id);
-            form.setValue("lastMonth", last.data.paymentDate);
+            form.setValue("lastMonth", (await last).data.paymentDate);
             form.setValue("name", data.name);
             return;
           }
@@ -142,9 +161,6 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
           form.setValue("lastMonth", "Ninguno");
           return;
         }
-        toast.success("Ciudadano encontrado");
-        form.setValue("client", data._id);
-        return;
       } else {
         toast.error("No se encontró el DNI/RUC");
       }
@@ -169,11 +185,18 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
       }
     } else {
       values.paymentDate = String(values.date);
+      if (values.lastMonth?.toUpperCase()!=="NINGUNO" && Show) {
+        const pagoactual = new Date(values.paymentDate)
+        const ultimopago = new Date(String(values.lastMonth));
+        if (pagoactual<ultimopago) {
+          return toast.error("Debe ingresar una fecha superior a la del último més pagado")
+        }
+      }
       const valuesUpdate = {
         ...values,
-        months: Show ? "0" : values.months,
+        months: !Show ? "0" : values.months,
       };
-      console.log(valuesUpdate);
+
       try {
         await axios.post(`/service-receipt`, valuesUpdate);
         toast.success("Recibo registrado correctamente");
