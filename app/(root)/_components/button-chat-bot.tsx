@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { FormChatBot } from './form-chat-bot';
-import { LoadingComponent } from './loading-component';
 import { ResponseMessage } from './response-message';
+import { useSocket } from '@/components/providers/socket-provider';
+import { SocketIndicator } from '@/components/socket-indicator';
 
 export const ButtonChatBot = () => {
 	const [othersQuestions, setOthersQuestions] = useState(false);
@@ -93,6 +94,7 @@ export const ButtonChatBot = () => {
 								<span className='text-sm font-medium'>
 									Hola 👋, ¿en qué podemos ayudarte?
 								</span>
+								<SocketIndicator />
 								<Button
 									onClick={onReset}
 									size={'icon'}
