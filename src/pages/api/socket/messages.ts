@@ -1,5 +1,5 @@
-import { NextApiResponseServerIo } from '@/types';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiResponseServerIo } from '../../../../types';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponseServerIo) {
 	if (req.method !== 'POST') {
