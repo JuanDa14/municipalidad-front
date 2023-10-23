@@ -1,5 +1,5 @@
+import { QRDetail } from '@/app/(root)/_components/qr-detail';
 import { ServiceReceipt } from '@/interfaces/service-receipt';
-import Detail from '../../../_components/detail';
 import { ServiceReceiptDetail } from '@/interfaces/service-receipt-detail';
 
 interface PrintIdProps {
@@ -23,7 +23,7 @@ async function getReceipt(id: string): Promise<responseDetail> {
 }
 const PageDetail = async ({ params }: PrintIdProps) => {
 	const data = await getReceipt(params.id);
-	return <Detail details={data.details} receipt={data.receipt}></Detail>;
+	return <QRDetail details={data.details} receipt={data.receipt} />;
 };
 
 export default PageDetail;

@@ -8,6 +8,7 @@ import format from 'date-fns/format';
 import es from 'date-fns/locale/es';
 import { NumerosALetras } from '@/lib/numbers-to-words-es';
 import qrCode from 'qrcode';
+import { formatPrice } from '@/lib/format';
 
 interface responseDetail {
 	receipt: ServiceReceipt;
@@ -70,7 +71,7 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
 											justifyContent: 'space-between',
 										}}
 									>
-										<Text>Total S/. {receipt.amount}</Text>
+										<Text>Total {formatPrice(Number(receipt.amount))}</Text>
 										<Text>Nº {formatoWithZeros(receipt.autoIncrement)}</Text>
 									</View>
 									<View
@@ -159,6 +160,7 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
 														style={{
 															width: '30%',
 															flexDirection: 'row',
+															gap: 5,
 														}}
 													>
 														<View style={{ width: 60 }}>
@@ -168,7 +170,9 @@ const PrintComponent = ({ receipt, detail }: responseDetail) => {
 															<Text style={{ textAlign: 'right' }}>{year}</Text>
 														</View>
 														<View style={{ width: 40 }}>
-															<Text style={{ textAlign: 'right' }}>{d.amount}</Text>
+															<Text style={{ textAlign: 'right' }}>
+																{formatPrice(Number(d.amount))}
+															</Text>
 														</View>
 													</View>
 												</View>

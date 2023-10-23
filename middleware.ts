@@ -2,16 +2,15 @@ export { default } from 'next-auth/middleware';
 
 export const config = {
 	matcher: [
-		'/api/auth/session',
-		'/api/auth/signin',
-		'/api/auth/signout',
-		'/api/auth/callback',
-		'/api/auth/csrf',
-
+		'/charts/:path*',
 		'/clients/:path*',
 		'/dashboard/:path*',
+		'/providers/:path*',
+		'/receipts/:path*',
 		'/reports/:path*',
+		'/requests/:path*',
 		'/roles/:path*',
+		'/services/:path*',
 		'/settings/:path*',
 		'/users/:path*',
 	],

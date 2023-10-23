@@ -1,7 +1,7 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Carousel } from '../_components/carousel';
+import { Carousel } from '@/app/(root)/_components/carousel';
 
 const RootPage = async () => {
 	return (

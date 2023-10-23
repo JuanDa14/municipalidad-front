@@ -1,7 +1,7 @@
+import { Navbar } from '@/app/(root)/_components/navbar';
 import React from 'react';
-import { ButtonChatBot } from './_components/button-chat-bot';
-import { Navbar } from './_components/navbar';
-import { Footer } from './_components/footer';
+import { ButtonChatBot } from '@/app/(root)/_components/button-chat-bot';
+import { Footer } from '@/app/(root)/_components/footer';
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
