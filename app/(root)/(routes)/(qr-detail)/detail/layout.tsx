@@ -3,7 +3,11 @@ interface QRLayoutProps {
 }
 
 const QRLayout = ({ children }: QRLayoutProps) => {
-	return <main className='flex flex-col h-full items-center'>{children}</main>;
+	return (
+		<main className='min-h-screen w-full flex flex-col items-center justify-center'>
+			{children}
+		</main>
+	);
 };
 
 export default QRLayout;

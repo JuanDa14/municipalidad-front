@@ -51,18 +51,9 @@ export const UserButton = () => {
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
-					<DropdownMenuItem onClick={() => onNavigate('/settings')}>
-						Perfil
-						<DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-					</DropdownMenuItem>
-					<DropdownMenuItem>
-						Facturación
-						<DropdownMenuShortcut>⌘F</DropdownMenuShortcut>
-					</DropdownMenuItem>
-
 					<ModeToggle />
 
-					<DropdownMenuItem>
+					<DropdownMenuItem onClick={() => onNavigate('/settings')}>
 						Configuración
 						<DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
 					</DropdownMenuItem>

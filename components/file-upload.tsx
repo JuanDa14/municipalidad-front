@@ -44,8 +44,7 @@ export const FileUpload = ({ onChange, endpoint, value }: FileUploadProps) => {
 			onClientUploadComplete={(res) => {
 				onChange(res?.[0].url);
 			}}
-			onUploadError={(error: Error) => {
-				console.error(error);
+			onUploadError={() => {
 				toast.error('Ocurrió un error al subir el archivo');
 			}}
 		/>

@@ -39,13 +39,18 @@ const createRequestSchema = z.object({
 		message: 'El solicitante debe tener al menos 3 caracteres.',
 	}),
 	eventDate: z.date({ required_error: 'La fecha del evento es requerido' }),
-	description: z.string({ required_error: 'La descripcion es obligatoria' }).max(200, {
-		message: 'La descripcion debe tener máximo 100 caracteres.',
-	}),
+	description: z
+		.string({ required_error: 'La descripcion es obligatoria' })
+		.min(10, {
+			message: 'La descripcion debe tener al menos 10 caracteres.',
+		})
+		.max(200, {
+			message: 'La descripcion debe tener máximo 100 caracteres.',
+		}),
 	urlPDF: z.string({ required_error: 'El PDF es requerido' }).min(1, {
 		message: 'El PDF es requerido',
 	}),
-	state: z.enum(['PENDIENTE', 'APROBADO', 'RECHAZADO'], {
+	state: z.enum(['Pendiente', 'Aprobado', 'Rechazado'], {
 		required_error: 'El estado es requerido',
 	}),
 });
@@ -62,11 +67,11 @@ export const FormRequest = ({ initialData }: FormRequestProps) => {
 	const form = useForm<z.infer<typeof createRequestSchema>>({
 		resolver: zodResolver(createRequestSchema),
 		defaultValues: {
-			applicant: '',
-			eventDate: new Date(),
-			description: '',
-			urlPDF: '',
-			state: 'PENDIENTE',
+			applicant: initialData?.applicant || '',
+			eventDate: new Date(initialData?.eventDate || Date.now()),
+			description: initialData?.description || '',
+			urlPDF: initialData?.urlPDF || '',
+			state: initialData?.state || 'Pendiente',
 		},
 	});
 
@@ -75,21 +80,21 @@ export const FormRequest = ({ initialData }: FormRequestProps) => {
 	const onSubmit = async (values: z.infer<typeof createRequestSchema>) => {
 		if (initialData) {
 			try {
-				await axios.patch(`/provider/${initialData._id}`, values);
-				toast.success('Proveedor actualizado correctamente');
+				await axios.patch(`/request-attachment/${initialData._id}`, values);
+				toast.success('Solicitud actualizado correctamente');
 				router.refresh();
-				router.push('/providers');
+				router.push('/requests');
 			} catch {
-				toast.error('Error al actualizar el proveedor');
+				toast.error('Error al actualizar la solicitud');
 			}
 		} else {
 			try {
-				await axios.post('/provider', values);
-				toast.success('Proveedor creado correctamente');
+				await axios.post('/request-attachment', values);
+				toast.success('Solicitud creado correctamente');
 				router.refresh();
-				router.push('/providers');
+				router.push('/requests');
 			} catch {
-				toast.error('Error al crear el proveedor');
+				toast.error('Error al crear la solicitud');
 			}
 		}
 	};
@@ -97,12 +102,12 @@ export const FormRequest = ({ initialData }: FormRequestProps) => {
 	const onDelete = async () => {
 		try {
 			setIsDeleting(true);
-			await axios.delete(`/provider/${initialData?._id}`);
-			toast.success('Proveedor eliminado correctamente');
+			await axios.delete(`/request-attachment/${initialData?._id}`);
+			toast.success('Solicitud eliminado correctamente');
 			router.refresh();
-			router.push('/providers');
+			router.push('/requests');
 		} catch {
-			toast.error('Error al eliminar el proveedor');
+			toast.error('Error al eliminar la solicitud');
 		} finally {
 			setIsDeleting(false);
 		}
@@ -173,6 +178,7 @@ export const FormRequest = ({ initialData }: FormRequestProps) => {
 											placeholder='Descripcion...'
 										/>
 									</FormControl>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -212,7 +218,7 @@ export const FormRequest = ({ initialData }: FormRequestProps) => {
 												</SelectTrigger>
 											</FormControl>
 											<SelectContent>
-												{['PENDIENTE', 'APROBADO', 'RECHAZADO'].map((state) => (
+												{['Pendiente', 'Aprobado', 'Rechazado'].map((state) => (
 													<SelectItem value={state} key={state}>
 														{state}
 													</SelectItem>
@@ -236,7 +242,9 @@ export const FormRequest = ({ initialData }: FormRequestProps) => {
 											value={field.value}
 											onChange={(url) => {
 												if (url) {
-													field.onChange(url);
+													form.setValue('urlPDF', url);
+												} else {
+													form.setValue('urlPDF', '');
 												}
 											}}
 										/>

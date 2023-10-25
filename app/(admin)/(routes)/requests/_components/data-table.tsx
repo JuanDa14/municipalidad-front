@@ -25,12 +25,12 @@ import {
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ServiceReceipt } from '@/interfaces/service-receipt';
 import { PlusCircle } from 'lucide-react';
+import { RequestAttachment } from '@/interfaces/request-attachment';
 
 interface DataTableProps {
-	data: ServiceReceipt[];
-	columns: ColumnDef<ServiceReceipt>[];
+	data: RequestAttachment[];
+	columns: ColumnDef<RequestAttachment>[];
 }
 
 export function DataTable({ data, columns }: DataTableProps) {
@@ -57,24 +57,24 @@ export function DataTable({ data, columns }: DataTableProps) {
 			<div>
 				<div>
 					<div className='h-16 px-4 border-b'>
-						<h2 className='text-3xl font-bold tracking-tight'>Recibos</h2>
-						<p className='text-sm text-foreground'>Lista de los recibos registrados.</p>
+						<h2 className='text-3xl font-bold tracking-tight'>Solicitudes</h2>
+						<p className='text-sm text-foreground'>Lista de los solicitudes registrados.</p>
 					</div>
 					<div className='my-4'>
 						<div className='flex w-full items-center justify-between'>
 							<Input
 								type='search'
-								placeholder='Buscar por DNI...'
-								value={(table.getColumn('dni_ruc')?.getFilterValue() as string) ?? ''}
+								placeholder='Buscar por fecha de evento...'
+								value={(table.getColumn('eventDate')?.getFilterValue() as string) ?? ''}
 								onChange={(event) =>
-									table.getColumn('dni_ruc')?.setFilterValue(event.target.value)
+									table.getColumn('eventDate')?.setFilterValue(event.target.value)
 								}
 								className='w-[300px] md:w-[400px]'
 							/>
-							<Link href={'/receipts/create'} title='Crear cliente'>
+							<Link href={'/requests/create'}>
 								<Button>
 									<PlusCircle className='w-4 h-4 mr-2' />
-									Nuevo Recibo
+									Nueva solicitud
 								</Button>
 							</Link>
 						</div>

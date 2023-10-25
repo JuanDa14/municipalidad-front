@@ -12,72 +12,79 @@ import {
 	List,
 	Users2,
 	FolderCheck,
-	Receipt
+	Receipt,
+	FolderCog,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
 const routes = [
-  {
-    icon: Home,
-    href: "/dashboard",
-    label: "Dashboard",
-    private: false,
-  },
-  {
-    icon: Users,
-    href: "/users",
-    label: "Usuarios",
-    private: true,
-  },
-  {
-    icon: List,
-    href: "/roles",
-    label: "Roles",
-    private: true,
-  },
-  {
-    icon: Folder,
-    href: "/reports",
-    label: "Reportes",
-    private: true,
-  },
-  {
-    icon: Users,
-    href: "/clients",
-    label: "Clientes",
-    private: true,
-  },
-  {
-    icon: FolderCheck,
-    href: "/services",
-    label: "Servicios",
-    private: true,
-  },
-  {
-    icon: Receipt,
-    href: "/receipts",
-    label: "Recibos",
-    private: true,
-  },
-  {
-    icon: Users2,
-    href: "/providers",
-    label: "Proveedores",
-    private: true,
-  },
-  {
-    icon: LibraryIcon,
-    href: "/charts",
-    label: "Gráficas",
-    private: true,
-  },
-  {
-    icon: Settings,
-    href: "/settings",
-    label: "Configuración",
-    private: false,
-  },
+	{
+		icon: Home,
+		href: '/dashboard',
+		label: 'Dashboard',
+		private: false,
+	},
+	{
+		icon: Users,
+		href: '/users',
+		label: 'Usuarios',
+		private: true,
+	},
+	{
+		icon: List,
+		href: '/roles',
+		label: 'Roles',
+		private: true,
+	},
+	{
+		icon: Folder,
+		href: '/reports',
+		label: 'Reportes',
+		private: true,
+	},
+	{
+		icon: Users,
+		href: '/clients',
+		label: 'Clientes',
+		private: true,
+	},
+	{
+		icon: FolderCheck,
+		href: '/services',
+		label: 'Servicios',
+		private: true,
+	},
+	{
+		icon: FolderCog,
+		href: '/requests',
+		label: 'Solicitudes',
+		private: true,
+	},
+	{
+		icon: Receipt,
+		href: '/receipts',
+		label: 'Recibos',
+		private: true,
+	},
+	{
+		icon: Users2,
+		href: '/providers',
+		label: 'Proveedores',
+		private: true,
+	},
+	{
+		icon: LibraryIcon,
+		href: '/charts',
+		label: 'Gráficas',
+		private: true,
+	},
+	{
+		icon: Settings,
+		href: '/settings',
+		label: 'Configuración',
+		private: false,
+	},
 ];
 
 export const Sidebar = () => {
@@ -98,7 +105,7 @@ export const Sidebar = () => {
 							onClick={() => onNavigate(route.href)}
 							className={cn(
 								'text-xs group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition',
-								pathname === route.href && 'bg-primary/10 text-primary',
+								pathname?.includes(route.href) && 'bg-primary/10 text-primary',
 								route.private
 									? session?.user.role.name === 'ADMINISTRADOR'
 										? ''

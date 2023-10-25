@@ -28,9 +28,10 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { ConfirmModal } from '@/components/modals/confirm-modal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ButtonLoading } from '@/components/button-loading';
 import { ServiceType } from '@/interfaces/service-type';
+import { Textarea } from '@/components/ui/textarea';
 
 const serviceSchema = z.object({
 	name: z.string({ required_error: 'El nombre es requerido' }).min(3, {
@@ -38,6 +39,12 @@ const serviceSchema = z.object({
 	}),
 	description: z.string({ required_error: 'La descripcion es requerido' }).optional(),
 	state: z.enum(['Activo', 'Inactivo']),
+	price: z
+		.number({ required_error: 'El precio es requerido' })
+		.min(0, {
+			message: 'El precio debe ser mayor a 0.',
+		})
+		.transform((val) => Number(val)),
 	type: z.string({ required_error: 'El tipo es requerido' }),
 });
 
@@ -48,20 +55,28 @@ interface FormServiceProps {
 
 export const FormService = ({ initialData, serviceTypes }: FormServiceProps) => {
 	const router = useRouter();
+
 	const [isDeleting, setIsDeleting] = useState(false);
+
+	const [serviceTypesFilter, setserviceTypesFilter] = useState<ServiceType[]>([]);
 
 	const form = useForm<z.infer<typeof serviceSchema>>({
 		resolver: zodResolver(serviceSchema),
-		defaultValues: {
-			...initialData,
-			state: initialData?.state ? 'Activo' : 'Inactivo',
-			type: initialData?.type?._id,
-		} || {
-			name: '',
-			description: '',
-			state: 'Activo',
-			type: serviceTypes[0]._id,
-		},
+		defaultValues: initialData
+			? {
+					name: initialData.name,
+					description: initialData.type.description,
+					state: initialData.state ? 'Activo' : 'Inactivo',
+					type: initialData.type._id,
+					price: initialData.price,
+			  }
+			: {
+					name: '',
+					description: serviceTypes[0].description,
+					state: 'Activo',
+					type: serviceTypes[0]._id,
+					price: 0,
+			  },
 	});
 
 	const { isSubmitting } = form.formState;
@@ -139,7 +154,7 @@ export const FormService = ({ initialData, serviceTypes }: FormServiceProps) => 
 						</div>
 					</div>
 					<Separator className='bg-primary/10' />
-					<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+					<div className='grid grid-cols-1 gap-4'>
 						<FormField
 							control={form.control}
 							name='name'
@@ -156,15 +171,26 @@ export const FormService = ({ initialData, serviceTypes }: FormServiceProps) => 
 
 						<FormField
 							control={form.control}
-							name='description'
+							name='price'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Descripcion</FormLabel>
+									<FormLabel>Precio (S/.)</FormLabel>
 									<FormControl>
 										<Input
+											step={0.1}
+											type='number'
 											disabled={isSubmitting}
-											placeholder='descripcion...'
-											{...field}
+											placeholder='precio...'
+											value={Number(field.value)}
+											name={field.name}
+											onChange={(e) => {
+												const value = e.target.value;
+												if (value === '') {
+													field.onChange(0);
+												} else {
+													field.onChange(Number(value));
+												}
+											}}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -180,7 +206,15 @@ export const FormService = ({ initialData, serviceTypes }: FormServiceProps) => 
 									<FormLabel>Tipo de servicio</FormLabel>
 									<Select
 										disabled={isSubmitting}
-										onValueChange={field.onChange}
+										onValueChange={(value) => {
+											const serviceType = serviceTypes.find(
+												(serviceType) => serviceType._id === value
+											);
+											if (serviceType) {
+												form.setValue('description', serviceType.description);
+											}
+											field.onChange(value);
+										}}
 										value={field.value}
 										defaultValue={field.value}
 									>
@@ -200,6 +234,20 @@ export const FormService = ({ initialData, serviceTypes }: FormServiceProps) => 
 											))}
 										</SelectContent>
 									</Select>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name='description'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Tipo pago</FormLabel>
+									<FormControl>
+										<Input {...field} disabled={true} />
+									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}

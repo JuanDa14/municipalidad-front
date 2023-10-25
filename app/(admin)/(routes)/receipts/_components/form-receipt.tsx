@@ -5,10 +5,9 @@ import { useRouter } from 'next/navigation';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, PencilIcon, PencilLine, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { axios } from '@/lib/axios';
-import Axios from 'axios';
 import {
 	Form,
 	FormControl,
@@ -71,8 +70,10 @@ interface FormReceiptProps {
 export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 	const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 	const [Show, setShow] = useState(true);
+	const [isEditingAmount, setisEditingAmount] = useState(true);
 
 	const router = useRouter();
+
 	const form = useForm<z.infer<typeof createServiceReceiptSchema>>({
 		resolver: zodResolver(createServiceReceiptSchema),
 		defaultValues: initialData
@@ -82,6 +83,7 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 					date: new Date(initialData.paymentDate),
 					client: initialData.client._id,
 					document_type: 'DNI',
+					amount: String(initialData.service.price),
 			  }
 			: {
 					document_type: 'DNI',
@@ -90,7 +92,7 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 					name: '',
 					months: '',
 					date: new Date(),
-					amount: '',
+					amount: String(services[0].price),
 					client: '',
 					lastMonth: '',
 			  },
@@ -146,12 +148,12 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 						client: data._id,
 						service: form.getValues('service'),
 					};
-					const last = getLastMonth(val);
+					const last = await getLastMonth(val);
 
 					if (last) {
 						toast.success('Ciudadano encontrado');
 						form.setValue('client', data._id);
-						form.setValue('lastMonth', (await last).data.paymentDate);
+						form.setValue('lastMonth', last.data.paymentDate);
 						form.setValue('name', data.name);
 						return;
 					}
@@ -281,7 +283,15 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 									<FormLabel>Servicios</FormLabel>
 									<Select
 										disabled={isSubmitting}
-										onValueChange={field.onChange}
+										onValueChange={(value) => {
+											const serviceType = services.find(
+												(serviceType) => serviceType._id === value
+											);
+											if (serviceType) {
+												form.setValue('amount', String(serviceType.price));
+											}
+											field.onChange(value);
+										}}
 										value={field.value}
 										defaultValue={field.value}
 									>
@@ -332,12 +342,27 @@ export const FormReceipt = ({ initialData, services }: FormReceiptProps) => {
 								<FormItem className='w-full'>
 									<FormLabel>Precio(S/.) unitario por servicio</FormLabel>
 									<FormControl>
-										<Input
-											type='number'
-											disabled={isSubmitting}
-											placeholder='Ingrese el numero de meses que se va a cancelar'
-											{...field}
-										/>
+										<div className='flex items-center gap-2'>
+											<Input
+												step={0.1}
+												type='number'
+												disabled={isSubmitting || isEditingAmount}
+												placeholder='Ingrese el precio del servicio'
+												{...field}
+											/>
+											<Button
+												type='button'
+												variant={'secondary'}
+												size={'icon'}
+												onClick={() => setisEditingAmount(!isEditingAmount)}
+											>
+												{isEditingAmount ? (
+													<PencilIcon className='w-4 h-4' />
+												) : (
+													<X className='w-4 h-4' />
+												)}
+											</Button>
+										</div>
 									</FormControl>
 									<FormMessage />
 								</FormItem>

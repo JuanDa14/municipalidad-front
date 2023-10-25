@@ -5,4 +5,5 @@ export interface Service {
 	name: string;
 	state: boolean;
 	type: ServiceType;
+	price: number;
 }

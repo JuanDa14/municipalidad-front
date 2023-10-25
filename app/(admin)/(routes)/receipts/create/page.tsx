@@ -9,6 +9,7 @@ async function getServices(): Promise<Service[]> {
 
 const ReceipPage = async () => {
 	const services = await getServices();
+
 	return <FormReceipt services={services} />;
 };
 

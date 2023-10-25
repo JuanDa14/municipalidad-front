@@ -8,12 +8,12 @@ interface PrintIdProps {
 	};
 }
 
-interface responseDetail {
+interface ResponseDetail {
 	receipt: ServiceReceipt;
 	details: ServiceReceiptDetail[];
 }
 
-async function getReceipt(id: string): Promise<responseDetail> {
+async function getReceipt(id: string): Promise<ResponseDetail> {
 	const resp = await fetch(`${process.env.API_URL}/service-receipt/print/${id}`, {
 		cache: 'no-cache',
 	});
@@ -21,8 +21,10 @@ async function getReceipt(id: string): Promise<responseDetail> {
 	const data = await resp.json();
 	return data;
 }
+
 const PageDetail = async ({ params }: PrintIdProps) => {
 	const data = await getReceipt(params.id);
+
 	return <QRDetail details={data.details} receipt={data.receipt} />;
 };
 
