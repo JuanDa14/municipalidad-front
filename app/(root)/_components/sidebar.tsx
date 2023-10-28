@@ -15,36 +15,27 @@ import {
 import { cn } from '@/lib/utils';
 
 const routes = [
-	{
-		href: 'https://www.google.com',
-		label: 'Inicio',
-		icon: HomeIcon,
-	},
-	{
-		href: 'https://www.google.com',
-		label: 'Noticias',
-		icon: AlertCircle,
-	},
-	{
-		href: 'https://www.google.com',
-		label: 'Municipalidad',
-		icon: HotelIcon,
-	},
-	{
-		href: 'https://www.google.com',
-		label: 'Servicios',
-		icon: FolderCheckIcon,
-	},
-	{
-		href: 'https://www.google.com',
-		label: 'Ciudad',
-		icon: CircuitBoard,
-	},
-	{
-		href: 'https://www.google.com',
-		label: 'Correo',
-		icon: MailIcon,
-	},
+  {
+    href: "/#hero",
+    label: "Inicio",
+    icon: HomeIcon,
+  },
+  {
+    href: "/#news",
+    label: "Noticias",
+    icon: AlertCircle,
+  },
+
+  {
+    href: "/#services",
+    label: "Servicios",
+    icon: FolderCheckIcon,
+  },
+  {
+    href: "https://www.facebook.com/profile.php?id=100009636243866",
+    label: "Municipalidad",
+    icon: HotelIcon,
+  },
 ];
 
 export const Sidebar = () => {

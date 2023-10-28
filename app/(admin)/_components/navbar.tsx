@@ -22,12 +22,12 @@ export const Navbar = () => {
 					)}
 				>
 					<Image
-						src='/next.svg'
+						src='/logo muni.png'
 						priority
 						alt='Logo'
-						width={150}
+						width={60}
 						height={150}
-						className='cursor-pointer'
+						className='ml-10 cursor-pointer'
 					/>
 				</Link>
 			</div>

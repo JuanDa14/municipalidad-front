@@ -9,41 +9,33 @@ import { MobileNavbar } from '@/components/mobile-navbar';
 import { Sidebar } from './sidebar';
 
 const routes = [
-	{
-		href: 'https://www.google.com',
-		label: 'Inicio',
-	},
-	{
-		href: 'https://www.google.com',
-		label: 'Noticias',
-	},
-	{
-		href: 'https://www.google.com',
-		label: 'Municipalidad',
-	},
-	{
-		href: 'https://www.google.com',
-		label: 'Servicios',
-	},
-	{
-		href: 'https://www.google.com',
-		label: 'Ciudad',
-	},
-	{
-		href: 'https://www.google.com',
-		label: 'Correo',
-	},
+  {
+    href: "/#hero",
+    label: "Inicio",
+  },
+  {
+    href: "/#news",
+    label: "Noticias",
+  },
+  {
+    href: "/#services",
+    label: "Servicios",
+  },
+  {
+    href: "https://www.facebook.com/profile.php?id=100009636243866",
+    label: "Municipalidad",
+  }
 ];
 
 export const Navbar = () => {
 	return (
 		<div className='fixed top-0 w-full z-50 h-16 bg-primary-foreground border-b border-primary/10'>
-			<div className='w-full h-full flex items-center justify-between px-5'>
-				<MobileNavbar className='p-0 pt-10 w-1/2'>
+			<div className='w-full h-full flex items-center justify-between px-5 '>
+				<MobileNavbar className='p-0 pt-10 '>
 					<Sidebar />
 				</MobileNavbar>
 				<div className='hidden md:flex'>
-					<Image src='/next.svg' alt='Picture of the author' width={150} height={50} />
+					<Image src='/logo muni.png' alt='Picture of the author' width={60} height={70} className='ml-10'/>
 				</div>
 				<div className='flex items-center gap-10'>
 					<NavBarRoutes routes={routes} />

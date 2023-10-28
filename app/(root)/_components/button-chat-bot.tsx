@@ -73,6 +73,7 @@ export const ButtonChatBot = () => {
 	};
 
 	const onReset = () => {
+	
 		setOthersQuestions(false);
 		setIsLoadingQuestions(false);
 		setMessages([]);
@@ -95,13 +96,13 @@ export const ButtonChatBot = () => {
 									Hola 👋, ¿en qué podemos ayudarte?
 								</span>
 								<SocketIndicator />
-								<Button
+								<Button 
 									onClick={onReset}
 									size={'icon'}
 									variant={'link'}
 									className='absolute -top-3 right-0'
 								>
-									<X className='h-4 w-4' />
+									<X className='h-4 w-4'  />
 								</Button>
 							</div>
 						</div>

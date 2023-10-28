@@ -13,7 +13,7 @@ interface MobileNavbarProps {
 
 export const MobileNavbar = ({ children, className }: MobileNavbarProps) => {
 	return (
-		<Sheet>
+		<Sheet >
 			<SheetTrigger className='md:hidden pr-4'>
 				<Menu />
 			</SheetTrigger>

@@ -10,9 +10,9 @@ export const NavBarRoutes = ({ routes }: NavbarRoutesProps) => {
 	return (
 		<div>
 			<ul className='flex flex-col md:flex-row items-center justify-center gap-x-3'>
-				{routes.map((route) => (
-					<li key={route.label}>
-						<Link href={route.href}>
+				{routes.map((route,i) => (
+					<li key={i}>
+						<Link href={route.href} target={Number(i)===3 ? "_blank": ""}>
 							<span className='hidden md:block font-medium text-base text-primary'>
 								{route.label}
 							</span>
