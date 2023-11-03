@@ -13,7 +13,7 @@ export function RecentRequests({ requests }: RecentRequestsProps) {
 	return (
 		<div className='space-y-8 w-full'>
 			{requests.map((request) => (
-				<div className='flex items-center justify-between'>
+				<div key={request._id} className='flex items-center justify-between'>
 					<div className='ml-4 space-y-1'>
 						<p className='text-sm font-medium leading-none'>
 							Solicitante: {request.applicant}
