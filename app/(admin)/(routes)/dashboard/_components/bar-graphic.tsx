@@ -1,5 +1,6 @@
 'use client';
 
+import { formatNumberToMonth, formatPrice } from '@/lib/format';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 const data = [
@@ -53,10 +54,21 @@ const data = [
 	},
 ];
 
-export function BarGraphic() {
+interface BarGraphicProps {
+	data: { _id: string; total: number }[];
+}
+
+export function BarGraphic({ data }: BarGraphicProps) {
+	const formatData = data.map((item: { _id: string; total: number }) => {
+		return {
+			name: formatNumberToMonth(Number(item._id)),
+			total: item.total,
+		};
+	});
+
 	return (
 		<ResponsiveContainer width='100%' height={350}>
-			<BarChart data={data}>
+			<BarChart data={formatData}>
 				<XAxis
 					dataKey='name'
 					stroke='#888888'
@@ -69,7 +81,7 @@ export function BarGraphic() {
 					fontSize={12}
 					tickLine={false}
 					axisLine={false}
-					tickFormatter={(value) => `S/.${value}`}
+					tickFormatter={(value) => formatPrice(value as number)}
 				/>
 				<Bar dataKey='total' fill='#adfa1d' radius={[4, 4, 0, 0]} />
 			</BarChart>
