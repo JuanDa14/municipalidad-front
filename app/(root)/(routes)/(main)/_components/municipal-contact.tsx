@@ -23,7 +23,7 @@ const socials = [
 export const MunicipalContact = () => {
 	return (
 		<section id='contacto' className='w-full mt-10'>
-			<div className='max-w-7xl mx-auto flex items-center justify-between p-10'>
+			<div className='max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between p-10 gap-y-10'>
 				<div className='space-y-4 w-full'>
 					<h4 className='text-xl font-medium'>Contáctenos</h4>
 					<div className='flex flex-col gap-2'>

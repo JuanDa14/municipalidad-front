@@ -33,7 +33,7 @@ const routes = [
 
 export const Navbar = () => {
 	return (
-		<div className='fixed top-0 w-full z-50 h-16 bg-blue-600 text-white border-b border-primary/10'>
+		<div className='fixed top-0 w-full z-50 h-16 bg-blue-600 bg-opacity-95 shadow-lg text-white border-b border-primary/10'>
 			<div className='w-full h-full flex items-center justify-between px-4 md:px-10'>
 				<MobileNavbar className='p-0 pt-10 '>
 					<Sidebar />
