@@ -8,7 +8,7 @@ interface MunicipalServiceProps {
 
 export const MunicipalServices = ({ services }: MunicipalServiceProps) => {
 	return (
-		<div id='services' className='space-y-10 bg-muted-foreground/10'>
+		<section id='servicios' className='space-y-10 bg-muted-foreground/10'>
 			<div className='max-w-7xl mx-auto px-10 py-10 space-y-10'>
 				<div className='flex flex-col items-center gap-2'>
 					<h3 className='text-xl font-medium text-blue-700'>Servicios</h3>
@@ -36,6 +36,6 @@ export const MunicipalServices = ({ services }: MunicipalServiceProps) => {
 					))}
 				</div>
 			</div>
-		</div>
+		</section>
 	);
 };

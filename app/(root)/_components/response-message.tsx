@@ -1,7 +1,7 @@
 'use client';
 
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { useRef, useEffect } from 'react';
 
 interface ResponseMessageProps {
 	onReset: () => void;
@@ -10,13 +10,20 @@ interface ResponseMessageProps {
 }
 
 export const ResponseMessage = ({ messages, isLoading = true }: ResponseMessageProps) => {
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (scrollContainerRef.current) {
+			scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+		}
+	}, [messages]);
+
 	return (
-		<ScrollArea className='h-full w-full rounded-md'>
+		<div ref={scrollContainerRef} className='h-full w-full rounded-md overflow-y-auto'>
 			<div className='max-h-44  flex flex-col gap-y-2'>
 				{messages.map(({ message, role }, i) => (
-					<>
+					<div key={i}>
 						<span
-							key={i}
 							className={cn(
 								'block p-2 rounded-md text-sm',
 								role === 'system' && 'text-start bg-blue-100',
@@ -27,9 +34,9 @@ export const ResponseMessage = ({ messages, isLoading = true }: ResponseMessageP
 								? 'Escribiendo...'
 								: message}
 						</span>
-					</>
+					</div>
 				))}
 			</div>
-		</ScrollArea>
+		</div>
 	);
 };

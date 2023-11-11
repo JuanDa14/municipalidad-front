@@ -7,7 +7,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 import { FormChatBot } from './form-chat-bot';
 import { ResponseMessage } from './response-message';
-import { useSocket } from '@/components/providers/socket-provider';
 import { SocketIndicator } from '@/components/socket-indicator';
 
 export const ButtonChatBot = () => {
@@ -23,7 +22,7 @@ export const ButtonChatBot = () => {
 			case 1:
 				setMessages([
 					{ role: 'user', message: 'Cuales son los horarios de atencion?' },
-					{ role: 'system', message: 'Los horarios de atención son de 8:00 a 18:00' },
+					{ role: 'system', message: 'Los horarios de atención son de 8:00 am a 18:00 pm' },
 				]);
 				break;
 			case 2:
@@ -41,7 +40,7 @@ export const ButtonChatBot = () => {
 					{ role: 'user', message: 'Como puedo contactarme con ustedes?' },
 					{
 						role: 'system',
-						message: 'Puedes contactarnos al 0800-12345 o al 123456789',
+						message: 'Puedes contactarnos al 965 659 203',
 					},
 				]);
 				break;
@@ -61,7 +60,7 @@ export const ButtonChatBot = () => {
 					{ role: 'user', message: 'Pregunta no encontrada' },
 					{
 						role: 'system',
-						message: 'Error, no se reconoce la pregunta',
+						message: 'No tengo informacion al respecto.',
 					},
 				]);
 				break;
@@ -149,6 +148,8 @@ export const ButtonChatBot = () => {
 									<FormChatBot
 										setMessages={setMessages}
 										setIsSubmitting={setIsSubmitting}
+										messages={messages}
+										isSubmitting={isSubmitting}
 									/>
 								</div>
 							</div>

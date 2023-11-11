@@ -12,7 +12,7 @@ export const MunicipalVisionMission = ({
 	municipalVisianAndMissions,
 }: MunicipalVisionMissionProps) => {
 	return (
-		<div className='space-y-10 p-10 rounded-lg'>
+		<section className='space-y-10 p-10 rounded-lg'>
 			<div className='text-center flex flex-col gap-2'>
 				<h3 className='text-xl font-medium'>Mision y Vision</h3>
 				<p className='font-medium text-muted-foreground'>
@@ -28,7 +28,8 @@ export const MunicipalVisionMission = ({
 									className='object-cover object-center w-40 h-40'
 									src={municipal.image}
 									alt={`Imagen ${i}`}
-									fill
+									width={160}
+									height={160}
 								/>
 							</CardHeader>
 							<div>
@@ -38,6 +39,6 @@ export const MunicipalVisionMission = ({
 					))}
 				</div>
 			</div>
-		</div>
+		</section>
 	);
 };

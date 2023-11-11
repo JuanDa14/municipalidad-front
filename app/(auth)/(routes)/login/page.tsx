@@ -25,7 +25,9 @@ const Page = async () => {
 		<div className='w-full min-h-screen flex items-center justify-center px-5 md:px-0'>
 			<Card className='mx-auto flex w-full flex-col justify-center sm:w-[450px] shadow rounded md:p-6'>
 				<CardHeader className='flex flex-col space-y-2 text-center'>
-					<CardTitle className='text-2xl font-semibold'>Municipalidad de San José</CardTitle>
+					<CardTitle className='text-2xl font-semibold'>
+						Municipalidad de San Mart&iacute;n de Porres
+					</CardTitle>
 					<CardDescription className='text-sm text-muted-foreground'>
 						Ingresa con tu correo electrónico y contraseña.
 					</CardDescription>
@@ -36,11 +38,11 @@ const Page = async () => {
 				<CardFooter>
 					<p className='text-center text-sm text-muted-foreground'>
 						Al continuar, aceptas los{' '}
-						<Link href='/terms' className='underline underline-offset-4 hover:text-primary'>
+						<Link href='/' className='underline underline-offset-4 hover:text-primary'>
 							Términos de servicio
 						</Link>{' '}
 						y{' '}
-						<Link href='/privacy' className='underline underline-offset-4 hover:text-primary'>
+						<Link href='/' className='underline underline-offset-4 hover:text-primary'>
 							Política de privacidad
 						</Link>
 						.

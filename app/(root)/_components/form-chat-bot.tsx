@@ -9,11 +9,16 @@ import { Send } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+interface ResponseChatBot {
+	role: 'user' | 'system';
+	message: string;
+}
+
 interface FormChatBotProps {
-	setMessages: (
-		value: React.SetStateAction<{ role: 'user' | 'system'; message: string }[]>
-	) => void;
+	setMessages: (value: React.SetStateAction<ResponseChatBot[]>) => void;
 	setIsSubmitting: (isSubmitting: boolean) => void;
+	isSubmitting: boolean;
+	messages: { role: 'user' | 'system'; message: string }[];
 }
 
 const formChatBotMessage = z.object({
@@ -22,7 +27,12 @@ const formChatBotMessage = z.object({
 	}),
 });
 
-export const FormChatBot = ({ setMessages, setIsSubmitting }: FormChatBotProps) => {
+export const FormChatBot = ({
+	setMessages,
+	setIsSubmitting,
+	messages,
+	isSubmitting,
+}: FormChatBotProps) => {
 	const form = useForm<z.infer<typeof formChatBotMessage>>({
 		resolver: zodResolver(formChatBotMessage),
 		defaultValues: {
@@ -33,23 +43,18 @@ export const FormChatBot = ({ setMessages, setIsSubmitting }: FormChatBotProps) 
 	const onFormQuestion = async (values: z.infer<typeof formChatBotMessage>) => {
 		try {
 			setIsSubmitting(true);
+			const oldMessages = messages;
+			const message = [{ role: 'user', message: values.message }] as ResponseChatBot[];
+			setMessages((prev) => [...prev, ...message]);
 			const { data } = await axios.post('/chatbot/message', values);
-			setMessages((prev) => [
-				...prev,
+			const newMessage = [
 				{ role: 'user', message: values.message },
 				{ role: 'system', message: data.message },
-			]);
-		} catch (error) {
-			console.log(error);
-			setMessages((prev) => [
-				...prev,
-				{ role: 'user', message: values.message },
-				{ role: 'system', message: 'No se pudo enviar el mensaje' },
-			]);
+			] as ResponseChatBot[];
+			setMessages([...oldMessages, ...newMessage]);
 		} finally {
-			setTimeout(() => {
-				setIsSubmitting(false);
-			}, 5000);
+			setIsSubmitting(false);
+			form.reset();
 		}
 	};
 
@@ -62,12 +67,12 @@ export const FormChatBot = ({ setMessages, setIsSubmitting }: FormChatBotProps) 
 					render={({ field }) => (
 						<FormItem className='flex-1'>
 							<FormControl>
-								<Input {...field} placeholder='Tu mensaje...' />
+								<Input disabled={isSubmitting} {...field} placeholder='Tu mensaje...' />
 							</FormControl>
 						</FormItem>
 					)}
 				/>
-				<Button size={'icon'}>
+				<Button size={'icon'} disabled={isSubmitting}>
 					<Send className='h-4 w-4' />
 				</Button>
 			</form>

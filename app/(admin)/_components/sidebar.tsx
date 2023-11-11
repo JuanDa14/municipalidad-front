@@ -97,7 +97,7 @@ export const Sidebar = () => {
 	};
 
 	return (
-		<div className='space-y-4 flex flex-col w-full h-full text-primary bg-secondary'>
+		<div className='space-y-4 flex flex-col w-full h-full text-primary bg-secondary overflow-y-auto border-r shadow'>
 			<div className='p-3 w-full justify-center'>
 				<div className='space-y-2'>
 					{routes.map((route) => (

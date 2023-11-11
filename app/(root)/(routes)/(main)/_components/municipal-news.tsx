@@ -19,22 +19,22 @@ interface MunicipalNewProps {
 
 export const MunicipalNews = ({ news }: MunicipalNewProps) => {
 	return (
-		<div id='news' className='space-y-10'>
+		<section id='noticias' className='space-y-10'>
 			<div className='max-w-7xl mx-auto px-10 py-10 space-y-10'>
 				<div className='flex flex-col items-center gap-2'>
-					<h3 className='text-xl font-medium'>Ultimas Noticias</h3>
-					<p className=' text-muted-foreground'>Gobierno Municipdal de San Jos&eacute;</p>
+					<h3 className='text-xl font-medium text-blue-700'>Ultimas Noticias</h3>
+					<p>Gobierno Municipdal de San Jos&eacute;</p>
 				</div>
 				<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10'>
 					{news.map((n, i) => (
 						<Card key={i}>
 							<CardHeader>
 								<CardTitle className='text-lg line-clamp-2'>{n.tittle}</CardTitle>
-								<CardDescription>
-									<div className='flex items-center gap-1'>
+								<CardDescription className='flex items-center gap-1'>
+									<>
 										<TimerIcon />
 										{n.date}
-									</div>
+									</>
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
@@ -51,6 +51,6 @@ export const MunicipalNews = ({ news }: MunicipalNewProps) => {
 					))}
 				</div>
 			</div>
-		</div>
+		</section>
 	);
 };

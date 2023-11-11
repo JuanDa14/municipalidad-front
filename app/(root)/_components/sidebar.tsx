@@ -15,27 +15,27 @@ import {
 import { cn } from '@/lib/utils';
 
 const routes = [
-  {
-    href: "/#hero",
-    label: "Inicio",
-    icon: HomeIcon,
-  },
-  {
-    href: "/#news",
-    label: "Noticias",
-    icon: AlertCircle,
-  },
+	{
+		href: '/#hero',
+		label: 'Inicio',
+		icon: HomeIcon,
+	},
+	{
+		href: '/#news',
+		label: 'Noticias',
+		icon: AlertCircle,
+	},
 
-  {
-    href: "/#services",
-    label: "Servicios",
-    icon: FolderCheckIcon,
-  },
-  {
-    href: "https://www.facebook.com/profile.php?id=100009636243866",
-    label: "Municipalidad",
-    icon: HotelIcon,
-  },
+	{
+		href: '/#services',
+		label: 'Servicios',
+		icon: FolderCheckIcon,
+	},
+	{
+		href: 'https://www.facebook.com/profile.php?id=100009636243866',
+		label: 'Municipalidad',
+		icon: HotelIcon,
+	},
 ];
 
 export const Sidebar = () => {

@@ -10,16 +10,20 @@ import { Sidebar } from './sidebar';
 
 const routes = [
 	{
-		href: '/#hero',
+		href: '#inicio',
 		label: 'Inicio',
 	},
 	{
-		href: '/#news',
+		href: '#noticias',
 		label: 'Noticias',
 	},
 	{
-		href: '/#services',
+		href: '#servicios',
 		label: 'Servicios',
+	},
+	{
+		href: '#contacto',
+		label: 'Contacto',
 	},
 	{
 		href: 'https://www.facebook.com/profile.php?id=100009636243866',
@@ -29,8 +33,8 @@ const routes = [
 
 export const Navbar = () => {
 	return (
-		<div className='fixed top-0 w-full z-50 h-16 bg-muted-foreground/10 border-b border-primary/10'>
-			<div className='w-full h-full flex items-center justify-between px-5'>
+		<div className='fixed top-0 w-full z-50 h-16 bg-blue-600 text-white border-b border-primary/10'>
+			<div className='w-full h-full flex items-center justify-between px-4 md:px-10'>
 				<MobileNavbar className='p-0 pt-10 '>
 					<Sidebar />
 				</MobileNavbar>
@@ -40,15 +44,18 @@ export const Navbar = () => {
 						alt='Imagen de la municipalidad'
 						width={60}
 						height={70}
-						className='ml-10'
 					/>
 				</div>
-				<div className='flex items-center gap-5'>
+				<div className='flex items-center'>
 					<NavBarRoutes routes={routes} />
 					<Link href={'/login'}>
-						<Button size={'sm'} className='flex items-center justify-center gap-1'>
-							<LogInIcon className='h-4 w-4' />
+						<Button
+							size={'sm'}
+							variant={'link'}
+							className='flex items-center justify-center gap-1 text-sm text-white transition'
+						>
 							Ingresar
+							<LogInIcon className='h-4 w-4' />
 						</Button>
 					</Link>
 				</div>
