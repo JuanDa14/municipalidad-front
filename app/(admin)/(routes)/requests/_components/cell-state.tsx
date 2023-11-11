@@ -9,14 +9,14 @@ import { Button } from '@/components/ui/button';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuRadioGroup,
-	DropdownMenuRadioItem,
+	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { RequestAttachment, RequestAttachmentState } from '@/interfaces/request-attachment';
 import { axios } from '@/lib/axios';
 import { cn } from '@/lib/utils';
 import { Row } from '@tanstack/react-table';
+import { ProtectedComponent } from '@/components/protected-component';
 
 interface CellStateProps {
 	row: Row<RequestAttachment>;
@@ -52,33 +52,25 @@ export const CellState = ({ row }: CellStateProps) => {
 			>
 				{row.original.state}
 			</Badge>
-			{row.original.state === 'Pendiente' && (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant={'ghost'} size={'icon'} disabled={isLoading}>
-							<ChevronDown className='h-4 w-4' />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-						<DropdownMenuRadioGroup
-							value={row.original.state}
-							onValueChange={(value) => {
-								onUpdate(value as RequestAttachmentState);
-							}}
-						>
-							<DropdownMenuRadioItem value={RequestAttachmentState.Pending}>
-								Pendiente
-							</DropdownMenuRadioItem>
-							<DropdownMenuRadioItem value={RequestAttachmentState.Approved}>
+			<ProtectedComponent roles={'ADMINISTRADOR'}>
+				{row.original.state === 'Pendiente' && (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant={'ghost'} size={'icon'} disabled={isLoading}>
+								<ChevronDown className='h-4 w-4 outline-none' />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent className='outline-none'>
+							<DropdownMenuItem onClick={() => onUpdate(RequestAttachmentState.Approved)}>
 								Aprobado
-							</DropdownMenuRadioItem>
-							<DropdownMenuRadioItem value={RequestAttachmentState.Rejected}>
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={() => onUpdate(RequestAttachmentState.Rejected)}>
 								Rechazado
-							</DropdownMenuRadioItem>
-						</DropdownMenuRadioGroup>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			)}
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)}
+			</ProtectedComponent>
 		</div>
 	);
 };

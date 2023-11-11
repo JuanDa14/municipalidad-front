@@ -47,7 +47,7 @@ const routes = [
 		icon: Users,
 		href: '/clients',
 		label: 'Clientes',
-		private: true,
+		private: false,
 	},
 	{
 		icon: FolderCheck,
@@ -59,13 +59,13 @@ const routes = [
 		icon: FolderCog,
 		href: '/requests',
 		label: 'Solicitudes',
-		private: true,
+		private: false,
 	},
 	{
 		icon: Receipt,
 		href: '/receipts',
 		label: 'Recibos',
-		private: true,
+		private: false,
 	},
 	{
 		icon: Users2,
@@ -77,7 +77,7 @@ const routes = [
 		icon: LibraryIcon,
 		href: '/charts',
 		label: 'Gráficas',
-		private: true,
+		private: false,
 	},
 	{
 		icon: Settings,
@@ -106,11 +106,9 @@ export const Sidebar = () => {
 							className={cn(
 								'text-xs group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition',
 								pathname?.includes(route.href) && 'bg-primary/10 text-primary',
-								route.private
-									? session?.user.role.name === 'ADMINISTRADOR'
-										? ''
-										: 'hidden'
-									: ''
+								route.private &&
+									!session?.user?.role?.name.includes('ADMINISTRADOR') &&
+									'hidden'
 							)}
 							key={route.href}
 						>
