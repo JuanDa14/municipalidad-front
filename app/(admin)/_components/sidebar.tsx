@@ -8,7 +8,6 @@ import {
 	Settings,
 	Users,
 	Folder,
-	LibraryIcon,
 	List,
 	Users2,
 	FolderCheck,
@@ -72,12 +71,6 @@ const routes = [
 		href: '/providers',
 		label: 'Proveedores',
 		private: true,
-	},
-	{
-		icon: LibraryIcon,
-		href: '/charts',
-		label: 'Gráficas',
-		private: false,
 	},
 	{
 		icon: Settings,

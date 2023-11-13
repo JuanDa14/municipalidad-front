@@ -7,7 +7,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 import { FormChatBot } from './form-chat-bot';
 import { ResponseMessage } from './response-message';
-import { SocketIndicator } from '@/components/socket-indicator';
 
 export const ButtonChatBot = () => {
 	const [othersQuestions, setOthersQuestions] = useState(false);
@@ -22,7 +21,11 @@ export const ButtonChatBot = () => {
 			case 1:
 				setMessages([
 					{ role: 'user', message: 'Cuales son los horarios de atencion?' },
-					{ role: 'system', message: 'Los horarios de atención son de 8:00 am a 18:00 pm' },
+					{
+						role: 'system',
+						message:
+							'Los horarios de atención son de lunes a viernes, de 7:30 a.m. a 3:15 p.m.',
+					},
 				]);
 				break;
 			case 2:
@@ -30,7 +33,7 @@ export const ButtonChatBot = () => {
 					{ role: 'user', message: 'Cuales son los servicios que ofrecen?' },
 					{
 						role: 'system',
-						message: 'Contamos con servicios de depósitos, préstamos y tarjetas',
+						message: 'Contamos con servicios de agua, sisa, recojo de basura, entre otros.',
 					},
 				]);
 				break;
@@ -40,7 +43,7 @@ export const ButtonChatBot = () => {
 					{ role: 'user', message: 'Como puedo contactarme con ustedes?' },
 					{
 						role: 'system',
-						message: 'Puedes contactarnos al 965 659 203',
+						message: 'Puedes contactarnos al +51 965 659 203',
 					},
 				]);
 				break;
@@ -93,7 +96,6 @@ export const ButtonChatBot = () => {
 								<span className='text-sm font-medium'>
 									Hola 👋, ¿en qué podemos ayudarte?
 								</span>
-								<SocketIndicator />
 								<Button
 									onClick={onReset}
 									size={'icon'}

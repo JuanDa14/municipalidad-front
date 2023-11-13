@@ -1,17 +1,5 @@
 'use client';
 
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { RequestAttachmentState } from '@/interfaces/request-attachment';
 import { axios } from '@/lib/axios';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
