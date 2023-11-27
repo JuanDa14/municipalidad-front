@@ -13,6 +13,7 @@ import {
 	FolderCheck,
 	Receipt,
 	FolderCog,
+	File,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -70,6 +71,12 @@ const routes = [
 		icon: Users2,
 		href: '/providers',
 		label: 'Proveedores',
+		private: true,
+	},
+	{
+		icon: File,
+		href: '/manual',
+		label: 'Manual de usuario',
 		private: true,
 	},
 	{

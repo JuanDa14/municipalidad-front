@@ -53,8 +53,10 @@ export const FormChatBot = ({
 			] as ResponseChatBot[];
 			setMessages([...oldMessages, ...newMessage]);
 		} finally {
-			setIsSubmitting(false);
-			form.reset();
+			setTimeout(() => {
+				setIsSubmitting(false);
+				form.reset();
+			}, 5000);
 		}
 	};
 
